@@ -27,7 +27,7 @@ var productSchema = new mongoose.Schema({
     },
     category:{
         type:mongoose.Types.ObjectId,
-        ref: 'Category'
+        ref: 'ProductCategory'
     },
     quantity:{
         type:Number,
@@ -38,7 +38,7 @@ var productSchema = new mongoose.Schema({
         default: 0
     },
     images:{
-        type:Array,
+        type:Array
     },
     color:{
         type:String,
