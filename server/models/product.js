@@ -1,4 +1,4 @@
-const mongoose = require('mongoose'); // Erase if already required
+const mongoose = require('mongoose'); // Erase if already require
 
 // Declare the Schema of the Mongo model
 var productSchema = new mongoose.Schema({
@@ -10,24 +10,24 @@ var productSchema = new mongoose.Schema({
     slug:{
         type:String,
         required:true,
-        unique:true,
+        // unique:true,
         lowercase: true
     },
     description:{
-        type:String,
+        type:Array,
         required:true,
     },
     brand:{
         type:String,
-        required:true,
+        require:true,
     },
     price:{
         type:Number,
         required:true,
     },
-    category:{
-        type:mongoose.Types.ObjectId,
-        ref: 'ProductCategory'
+    category: {
+        type:String,
+        required:true,
     },
     quantity:{
         type:Number,
@@ -42,7 +42,7 @@ var productSchema = new mongoose.Schema({
     },
     color:{
         type:String,
-        enum: ['Black', 'Grow', 'Red']
+        require:true,
     },
     ratings:[
         {
