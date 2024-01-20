@@ -1,6 +1,5 @@
-import React, { useEffect, useState} from 'react'
-import {Banner, Navigation, Sidebar, BestSeller} from '../../components'
-import { apiGetProducts } from '../../apis/product'
+import React from 'react'
+import {Banner, Sidebar, BestSeller} from '../../components'
 
 const Home = () => {
   
