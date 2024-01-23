@@ -3,15 +3,16 @@ import { formatMoney, renderStartFromNumber } from '../utils/helper'
 import label from '../assets/images/new.png'
 import trending from '../assets/images/trending.png'
 import SelectOption from './SelectOption'
- import icons from '../utils/icons'
-
+import icons from '../utils/icons'
+import {Link} from 'react-router-dom'
+import path from '../utils/path'
  const { AiFillEye, IoMdMenu,BsFillHeartFill } = icons
 
 const Product = ({productData, isNew}) => {
   const [isShowOption, setisShowOption] = useState(false)
   return (
     <div className='w-full text-base px-[10px]'>
-      <div 
+      <Link 
         className='w-full border p-[15px] flex-col items-center'
         onMouseEnter={(e) => {
           e.stopPropagation()
@@ -21,6 +22,7 @@ const Product = ({productData, isNew}) => {
           e.stopPropagation()
           setisShowOption(false)}
         }
+        to={`/${path.DETAIL_PRODUCT}/${productData?._id}/${productData?.title}`}
       >
         <div className='w-full relative'>
           {isShowOption &&  <div className='gap-2 absolute bottom-[-10px] flex left-0 right-0 justify-center animate-slide-top'>
@@ -41,7 +43,7 @@ const Product = ({productData, isNew}) => {
           <span className='line-clamp-1'>{productData?.title}</span>
           <span>{`${formatMoney(productData?.price)} VND`}</span>
         </div>
-      </div>
+      </Link>
     </div>
   )
 }
