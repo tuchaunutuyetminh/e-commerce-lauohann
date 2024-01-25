@@ -7,7 +7,10 @@ const {IoIosArrowForward} = icons
 const Home = () => {
   const {newProduct} = useSelector(state => state.products)
   const {categories} = useSelector(state => state.app)
+  const {current, isLoggedIn} = useSelector(state => state.user)
   
+  console.log({current, isLoggedIn})
+
   return (
     <>
       <div className='w-main flex'>
