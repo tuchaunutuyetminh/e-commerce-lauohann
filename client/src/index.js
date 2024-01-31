@@ -4,6 +4,8 @@ import { Provider } from 'react-redux';
 import {store, persistor} from './store/redux';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import 'react-toastify/dist/ReactToastify.css';
+
 import App from './App';
 import './index.css';
 import {BrowserRouter} from 'react-router-dom'
