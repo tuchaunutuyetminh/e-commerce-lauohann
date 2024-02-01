@@ -1,13 +1,13 @@
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import { InputField, Button } from '../../components'
 import { apiRegister, apiLogin, apiForgotPassword } from '../../apis/user'
 import Swal from 'sweetalert2'
 import { useNavigate, useLocation } from 'react-router-dom'
 import path from '../../utils/path'
-import {register} from '../../store/user/userSlice'
+import {login} from '../../store/user/userSlice'
 import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
-
+import {validate} from '../../utils/helper'
 
 const Login = () => {
   const navigate = useNavigate()
@@ -20,6 +20,7 @@ const Login = () => {
     lastname: '',
     mobile: ''
   })
+  const [invalidFields, setInvalidFields] = useState([])
   const [isRegister, setIsRegister] = useState(false)
   const [isForgotPassword, setIsForgotPassword] = useState(false)
   const resetPayload = () => {
@@ -38,24 +39,34 @@ const Login = () => {
       toast.success(response.mes, {theme: 'colored'})
     }else toast.info(response.mes, {theme: 'colored'})
   }
+
+  //reset payload 
+  useEffect(() => {
+    resetPayload()
+  }, [isRegister])
+  //SUBMI
   const handleSubmit = useCallback(async() => {
     const {firstname, lastname,mobile, ...data} = payload
+    const invalids = isRegister ? validate(payload, setInvalidFields) : validate(data, setInvalidFields)
 
-    if(isRegister) {
-      const response = await apiRegister(payload)
-      if(response.success) {
-        Swal.fire('Congratulation', response.mes, 'success').then(() => {
-          setIsRegister(false)
-          resetPayload()
-        })
-      }  else  Swal.fire('Opps', response.mes, 'error')
-    } else {
-      const rs = await apiLogin(data)
-      if(rs.success) {
-        dispatch(register({isLoggedIn: true, token: rs.accessToken, userData: rs.userData}))
-        navigate(`/${path.HOME}`)
-      }  else  Swal.fire('Opps', rs.mes, 'error')
-    }
+    console.log(invalids)
+    if(invalids === 0) {
+      if(isRegister) {
+        const response = await apiRegister(payload)
+        if(response.success) {
+          Swal.fire('Congratulation', response.mes, 'success').then(() => {
+            setIsRegister(false)
+            resetPayload()
+          })
+        }  else  Swal.fire('Opps', response.mes, 'error')
+      } else {
+        const rs = await apiLogin(data)
+        if(rs.success) {
+          dispatch(login({isLoggedIn: true, token: rs.accessToken, userData: rs.userData}))
+          navigate(`/${path.HOME}`)
+        }  else  Swal.fire('Opps', rs.mes, 'error')
+      }
+    } else {}
   }, [payload, isRegister])
   return (
     <div className='w-screen h-screen relative'>
@@ -94,27 +105,37 @@ const Login = () => {
               <InputField 
               value={payload.firstname}
               setValue={setPayload}
+              invalidFields={invalidFields}
+              setInvalidFields={setInvalidFields}
               nameKey='firstname'
             />
             <InputField 
               value={payload.lastname}
               setValue={setPayload}
+              invalidFields={invalidFields}
+              setInvalidFields={setInvalidFields}
               nameKey='lastname'
             />
             </div>}
             <InputField 
               value={payload.email}
               setValue={setPayload}
+              invalidFields={invalidFields}
+              setInvalidFields={setInvalidFields}
               nameKey='email'
             />
             {isRegister && <InputField 
               value={payload.mobile}
               setValue={setPayload}
+              invalidFields={invalidFields}
+              setInvalidFields={setInvalidFields}
               nameKey='mobile'
             />}
             <InputField 
               value={payload.password}
               setValue={setPayload}
+              invalidFields={invalidFields}
+              setInvalidFields={setInvalidFields}
               nameKey='password'
               type='password'
             />
