@@ -22,7 +22,7 @@ const Product = ({productData, isNew}) => {
           e.stopPropagation()
           setisShowOption(false)}
         }
-        to={`/${path.DETAIL_PRODUCT}/${productData?._id}/${productData?.title}`}
+        to={`/${productData?.category.toLowerCase()}/${productData?._id}/${productData?.title}`}
       >
         <div className='w-full relative'>
           {isShowOption &&  <div className='gap-2 absolute bottom-[-10px] flex left-0 right-0 justify-center animate-slide-top'>
