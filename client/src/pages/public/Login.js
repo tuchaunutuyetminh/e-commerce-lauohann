@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import { InputField, Button } from '../../components'
-import { apiRegister, apiLogin, apiForgotPassword } from '../../apis/user'
+import { apiRegister, apiLogin, apiForgotPassword, apiFinalRegister } from '../../apis/user'
 import Swal from 'sweetalert2'
 import { useNavigate, useLocation } from 'react-router-dom'
 import path from '../../utils/path'
@@ -20,9 +20,11 @@ const Login = () => {
     lastname: '',
     mobile: ''
   })
+  const [isVerifiedEmail, setIsVerifiedEmail] = useState(false)
   const [invalidFields, setInvalidFields] = useState([])
   const [isRegister, setIsRegister] = useState(false)
   const [isForgotPassword, setIsForgotPassword] = useState(false)
+  
   const resetPayload = () => {
     setPayload({
       email: '',
@@ -54,10 +56,7 @@ const Login = () => {
       if(isRegister) {
         const response = await apiRegister(payload)
         if(response.success) {
-          Swal.fire('Congratulation', response.mes, 'success').then(() => {
-            setIsRegister(false)
-            resetPayload()
-          })
+          setIsVerifiedEmail(true)
         }  else  Swal.fire('Opps', response.mes, 'error')
       } else {
         const rs = await apiLogin(data)
@@ -68,8 +67,39 @@ const Login = () => {
       }
     } else {}
   }, [payload, isRegister])
+
+  
+  const [token, setToken] = useState('')
+  const finalRegister = async() => {
+    const response = await apiFinalRegister(token)
+    if(response.success) {
+      Swal.fire('Congratulation', response.response, 'success').then(() => {
+        setIsRegister(false)
+        resetPayload()
+      })
+    } else Swal.fire('Opps', response.response, 'error')
+    setIsVerifiedEmail(false)
+    setToken('')
+  }
   return (
     <div className='w-screen h-screen relative'>
+      {isVerifiedEmail && <div className='flex justify-center items-center flex-col absolute top-0 left-0 right-0 bottom-0 bg-overlay z-50'>
+        <div className='bg-white w-[500px] rounded-md p-8'>
+          <h4 className=''>We sent a code to your email. Please check your mail and enter this code here: </h4> 
+          <input 
+            type='text'
+            value={token}
+            onChange={e => setToken(e.target.value)}
+            className='p-2 border rounded-md outline-none'
+          />
+
+          <Button 
+            name='Submit'
+            style='px-4 py-2 rounded-md text-white bg-blue-500 text-semibold my-2 ml-5'
+            handleOnclick={finalRegister}
+          />
+        </div>
+      </div>}
       {isForgotPassword && <div className='animate-slide-right absolute top-0 left-0 bottom-0 right-0 bg-white py-8 flex flex-col items-center justify-center z-50'>
         <div className='flex flex-col gap-4'>
           <label htmlFor='email'>Enter your email: </label>
