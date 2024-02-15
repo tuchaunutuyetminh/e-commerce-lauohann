@@ -8,12 +8,12 @@ import {Link} from 'react-router-dom'
 import path from '../utils/path'
  const { AiFillEye, IoMdMenu,BsFillHeartFill } = icons
 
-const Product = ({productData, isNew}) => {
+const Product = ({productData, isNew, normal}) => {
   const [isShowOption, setisShowOption] = useState(false)
   return (
     <div className='w-full text-base px-[10px]'>
       <Link 
-        className='w-full border p-[15px] flex-col items-center'
+        className='w-full p-[15px] border flex-col items-center block'
         onMouseEnter={(e) => {
           e.stopPropagation()
           setisShowOption(true)}
@@ -34,7 +34,10 @@ const Product = ({productData, isNew}) => {
           alt='product image' 
           className='w-[274px] h-[274px] object-cover'
           />
-          <img src={isNew ? label : trending} className='absolute w-[100px] h-[35px] top-[0] right-[0] object-cover'/>
+          {!normal && <img 
+          src={isNew ? label : trending} 
+          className='absolute w-[100px] h-[35px] top-[0] right-[0] object-cover'
+          />}
         </div>
         <div className='flex flex-col mt-[15px] items-start w-full'>
           <span className='flex h-4'>{renderStartFromNumber(productData?.totalRatings)?.map((el, index) => (
