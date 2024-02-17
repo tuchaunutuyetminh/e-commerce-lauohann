@@ -18,5 +18,7 @@ export { default as BreadCrumb} from './BreadCrumb'
 export { default as SelectQuantity} from './SelectQuantity' 
 export { default as ProductExtraInfoItem} from './ProductExtraInfoItem' 
 export { default as ProductInfomation} from './ProductInfomation' 
-export { default as SearchItem} from './SearchItem' 
+export { default as SearchItem} from './SearchItem'
+export { default as InputSelect} from './InputSelect' 
+
 

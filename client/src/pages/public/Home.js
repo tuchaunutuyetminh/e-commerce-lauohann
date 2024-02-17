@@ -9,7 +9,6 @@ const Home = () => {
   const {categories} = useSelector(state => state.app)
   const {current, isLoggedIn} = useSelector(state => state.user)
   
-  console.log({current, isLoggedIn})
 
   return (
     <>

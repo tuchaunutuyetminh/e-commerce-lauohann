@@ -32,17 +32,23 @@ const getProducts = asyncHandler(async (req, res) => {
     // Format lại các operators cho đúng cú pháp của mongoose
     let queryString = JSON.stringify(queries)
     queryString = queryString.replace(/\b(gte|gt|lt|lte)\b/g, matchedEl => `$${matchedEl}`)
-    const formatedQueries = JSON.parse(queryString)
+    const restQueries = JSON.parse(queryString)
 
+    let formatedQueries = {}
+    if(queries?.color) {
+        delete restQueries.color
+        const colorQuery = queries.color?.split(',').map(el => ({ color: { $regex: el, $options: 'i'}}))
+        formatedQueries = { $or: colorQuery}
+    }
     /**
      * {quantity}
      */
     // Filtering 
-    if(queries?.title) formatedQueries.title = {$regex: queries.title, $options: 'i'}
-    if(queries?.category) formatedQueries.category = { $regex: queries.category, $options: 'i'}
-    if(queries?.color) formatedQueries.color = { $regex: queries.color, $options: 'i'}
-    
-    let queryCommand = Product.find(formatedQueries)
+    if(queries?.title) restQueries.title = {$regex: queries.title, $options: 'i'}
+    if(queries?.category) restQueries.category = { $regex: queries.category, $options: 'i'}
+
+    const q = { ...formatedQueries, ...restQueries }
+    let queryCommand = Product.find(q)
 
 
     //Sorting 
@@ -71,7 +77,7 @@ const getProducts = asyncHandler(async (req, res) => {
     // Số sản phẩm thỏa mãn điều kiện !== số lượng sản phẩm trả về 1 lần gọi api
     queryCommand.exec(async(err, response) => {
         if(err) throw new Error(err.message)
-        const counts = await Product.find(formatedQueries).countDocuments()
+        const counts = await Product.find(q).countDocuments()
         return res.status(200).json({
             success: response ? true : false,
             counts,

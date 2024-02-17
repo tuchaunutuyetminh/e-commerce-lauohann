@@ -16,7 +16,6 @@ const TopHeader = () => {
       dispatch(getCurrent())
     }
   },[dispatch, isLoggedIn])
-  console.log(isLoggedIn, current)
   return (
     <div className='h-[38px] w-full bg-main flex items-center justify-center'>
         <div className='text-xs text-white w-main flex items-center justify-between '>

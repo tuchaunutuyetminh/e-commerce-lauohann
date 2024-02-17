@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
-import { BreadCrumb, Product, SearchItem } from '../../components'
+import { createSearchParams, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { BreadCrumb, InputSelect, Product, SearchItem } from '../../components'
 import { apiGetProducts } from '../../apis'
 import Masonry from 'react-masonry-css'
+import { sorts } from '../../utils/contants'
 
 const breakpointColumnsObj = {
   default: 4,
@@ -13,8 +14,10 @@ const breakpointColumnsObj = {
 const Products = () => {
   const { category } = useParams()
 
+  const navigate = useNavigate()
   const [activeClick, setActiveClick] = useState(null)
   const [products, setProducts] = useState(null)
+  const [sort, setSort] = useState('')
   const [params] = useSearchParams()
 
 
@@ -28,12 +31,40 @@ const Products = () => {
 
     const queries = {}
     for(let i of params) queries[i[0]] = i[1]
-    fetchProductsByCategory(queries)
+
+    let priceQuery = {}
+    if(queries.to && queries.from) {
+      priceQuery = { $and: [
+        {price: {gte: queries.from}},
+        {price: {lte: queries.to}}
+      ]}
+    delete queries.price
+
+    }
+    if(queries.from) queries.price = {gte: queries.from}
+    if(queries.to) queries.price = {lte: queries.to}
+    delete queries.to
+    delete queries.from
+   
+    const q = {...priceQuery, ...queries}
+
+    fetchProductsByCategory(q)
   }, [params])
   const changeActiveFilter = useCallback((name) => {
     if(activeClick === name) setActiveClick(null)
     else setActiveClick(name)
   }, [activeClick])
+
+  const changeValue = useCallback((value) => {
+    setSort(value)
+  }, [sort])
+
+  useEffect(() => {
+    navigate({
+      pathname: `/${category}`,
+      search: createSearchParams({sort}).toString()
+    })
+  },[sort])
   return (
     <div className='w-full'>
       <div className='h-[81px] flex justify-center items-center bg-gray-100'>
@@ -59,8 +90,11 @@ const Products = () => {
             />
           </div>
         </div>
-        <div className='w-1/5'>
-          Sort by
+        <div className='w-1/5 flex flex-col gap-3'>
+          <span className='font-semibold text-sm' >Sort by</span>
+          <div className='w-full '>
+            <InputSelect changeValue={changeValue} value={sort} options={sorts} />
+          </div>
         </div>
       </div>
       <div className='mt-8 w-main m-auto'>
