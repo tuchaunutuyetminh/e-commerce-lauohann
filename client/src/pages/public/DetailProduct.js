@@ -64,7 +64,7 @@ const handleChangeQuantity = useCallback((flag) => {
     setCurrentImage(el)
   }
   return (
-    <div className='w-full'>
+    <div className='w-full relative'>
       <div className='h-[81px] flex justify-center items-center bg-gray-100'>
         <div className='w-main'>
           <h3 className='font-semibold'>{title}</h3>
@@ -143,6 +143,7 @@ const handleChangeQuantity = useCallback((flag) => {
         <ProductInfomation 
           totalRatings={product?.totalRatings}
           totalCount={18}
+          nameProduct={product?.title}
         />
       </div>
       <div className='w-main m-auto mt-8'>

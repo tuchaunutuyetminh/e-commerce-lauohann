@@ -19,6 +19,8 @@ const SearchItem = ({name, activeClick, changeActiveFilter, type = 'checkbox'}) 
   const navigate = useNavigate()
 
   const {category} = useParams()
+
+  //chọn và bỏ chọn select
   const handelSelect = (e) => {
     const alreadyEl = selected.find(el => el === e.target.value)
     if(alreadyEl) setSelected(prev => prev.filter(el => el !== e.target.value))
