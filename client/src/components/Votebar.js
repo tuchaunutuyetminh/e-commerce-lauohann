@@ -8,7 +8,6 @@ const Votebar = ({number, ratingCount, ratingTotal}) => {
 
   useEffect(() => {
     percentRef.current.style.cssText = `right: ${100 - Math.round(ratingCount*100 / ratingTotal)}%`
-
   }, [ratingCount, ratingTotal])
 
   return (
