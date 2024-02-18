@@ -24,7 +24,7 @@ const Product = ({productData, isNew, normal}) => {
         }
         to={`/${productData?.category.toLowerCase()}/${productData?._id}/${productData?.title}`}
       >
-        <div className='w-full relative'>
+        <div className='w-full relative flex justify-center'>
           {isShowOption &&  <div className='gap-2 absolute bottom-[-10px] flex left-0 right-0 justify-center animate-slide-top'>
             <SelectOption icon={<AiFillEye />}/>
             <SelectOption icon={<IoMdMenu />}/>

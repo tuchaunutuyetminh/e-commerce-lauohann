@@ -20,22 +20,27 @@ const DetailProduct = () => {
   const [product, setProduct] = useState(null)
   const {pid, title, category} = useParams()
   const [quantity, setQuantity] = useState(1)
-  const [relativeProducts, setRelativeProducts] = useState(null)
+  const [currentImage, setCurrentImage] = useState(null)
+  const [relatedProducts, setRelatedProducts] = useState(null)
   const fetchProductData = async() => {
     const response = await apiGetProduct(pid)
-    if(response.success) setProduct(response.productData)
+    if(response.success) {
+      setProduct(response.productData)
+      setCurrentImage(response.productData?.thumb)
+    }
   }
 
   const fetchProducts = async() => {
     const response = await apiGetProducts({category})
     console.log(response)
-    if(response.success) setRelativeProducts(response.products)
+    if(response.success) setRelatedProducts(response.products)
   }
   useEffect(() => {
     if(pid) {
       fetchProductData()
       fetchProducts()
     }
+    window.scrollTo(0,0)
   }, [pid])
 
 const handleQuantity = useCallback((number) => {
@@ -52,6 +57,12 @@ const handleChangeQuantity = useCallback((flag) => {
   if(flag === 'plus') setQuantity(prev => +prev + 1 )
 
 }, [quantity])
+
+  //xử lý khi click ảnh 
+  const handleClickImage = (e, el) => {
+    e.stopPropagation()
+    setCurrentImage(el)
+  }
   return (
     <div className='w-full'>
       <div className='h-[81px] flex justify-center items-center bg-gray-100'>
@@ -62,15 +73,15 @@ const handleChangeQuantity = useCallback((flag) => {
       </div>
       <div className='w-main m-auto mt-4 flex'>
         <div className='w-2/5 gap-4 flex flex-col'>
-          <div className='w-[458px] h-[458px] border'>
+          <div className='w-[458px] h-[458px] border overflow-hidden'>
             <ReactImageMagnify {...{
               smallImage: {
                   alt: 'Wristwatch by Ted Baker London',
                   isFluidWidth: true,
-                  src: product?.thumb
+                  src: currentImage
               },
               largeImage: {
-                  src: product?.thumb,
+                  src: currentImage,
                   width: 1800,
                   height: 1500
               }
@@ -79,8 +90,13 @@ const handleChangeQuantity = useCallback((flag) => {
           <div className='w-[458px]'>
             <Slider className='image-slider' {...settings}>
               {product?.images?.map(el => (
-                <div key={el} className='flex w-full'>
-                  <img src={el} alt='sub-product' className='h-[143px] object-cover border'/>
+                <div 
+                  key={el} className='flex w-full'>
+                  <img 
+                    onClick={e => handleClickImage(e, el)}
+
+                    src={el} alt='sub-product' 
+                    className='h-[143px] object-cover border cursor-pointer'/>
                 </div>
               ))}
             </Slider>
@@ -89,13 +105,13 @@ const handleChangeQuantity = useCallback((flag) => {
         <div className='w-2/5 flex flex-col gap-4 mr-[20px]'>
           <div className='flex items-center justify-between'>
             <h2 className='text-[30px] font-semibold'>{`${formatMoney(fotmatPrice(product?.price))} VND`}</h2>
-            <span className='text-sm text-main'>{`Kho: ${product?.quantity}`}</span>
+            <span className='text-sm text-main'>{`In stock: ${product?.quantity}`}</span>
           </div>
           <div className='flex items-center'>
             {renderStartFromNumber(product?.totalRatings)?.map((el, index) => (
               <span key={index}>{el}</span>
             ))}
-            <span  className='text-sm text-main italic'>{`(Đã bán: ${product?.sold})`}</span>
+            <span  className='text-sm text-main italic'>{`(Sold: ${product?.sold}) pieces`}</span>
           </div>
           <ul className='text-sm text-gray-500 pl-6'>
             {product?.description?.map(el => (
@@ -124,11 +140,14 @@ const handleChangeQuantity = useCallback((flag) => {
         </div>
       </div>
       <div className='w-main m-auto mt-8'>
-        <ProductInfomation />
+        <ProductInfomation 
+          totalRatings={product?.totalRatings}
+          totalCount={18}
+        />
       </div>
       <div className='w-main m-auto mt-8'>
         <h3 className='text-[20px] font-semibold py-[15px] border-b-2 border-main'>OTHER CUSTOMER ALSO LIKED</h3>
-        <CustomSlider products={relativeProducts} normal={true}/>
+        <CustomSlider products={relatedProducts} normal={true}/>
       </div>
       <div className='h-[100px] w-full'></div>
     </div>
