@@ -1,7 +1,6 @@
 import React, { memo } from 'react'
 
 const SelectQuantity = ({handleChangeQuantity, quantity, handleQuantity}) => {
-  console.log(quantity)
   return (
     <div className='flex items-center'>
       <span onClick={() => handleChangeQuantity('minus')} className='cursor-pointer p-2 border-r border-black'>-</span>

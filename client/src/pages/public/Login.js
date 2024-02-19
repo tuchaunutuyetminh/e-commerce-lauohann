@@ -170,10 +170,9 @@ const Login = () => {
               type='password'
             />
             <Button 
-              name={isRegister ? 'Register' : 'Login'}
               handleOnclick={handleSubmit}
               fw
-            />
+            >{isRegister ? 'Register' : 'Login'}</Button>
             <div  className='flex items-center justify-between my-2 w-full text-sm'>
               {!isRegister && 
                 <span 
