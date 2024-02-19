@@ -13,7 +13,12 @@ const TopHeader = () => {
   const dispatch = useDispatch()
   useEffect(() => {
     if(isLoggedIn) {
-      dispatch(getCurrent())
+      const setTimeoutId = setTimeout(() => {
+        dispatch(getCurrent())
+      },300)
+      return () => {
+        clearTimeout(setTimeoutId)
+      }
     }
   },[dispatch, isLoggedIn])
   return (
