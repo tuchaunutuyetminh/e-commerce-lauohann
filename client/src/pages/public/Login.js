@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react'
-import { InputField, Button } from 'components'
+import { InputField, Button, Loading } from 'components'
 import { apiRegister, apiLogin, apiForgotPassword, apiFinalRegister } from 'apis/user'
 import Swal from 'sweetalert2'
 import { useNavigate, Link } from 'react-router-dom'
@@ -8,7 +8,7 @@ import {login} from 'store/user/userSlice'
 import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
 import {validate} from 'utils/helper'
-
+import { showModal } from 'store/app/appSlice'
 const Login = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -54,7 +54,9 @@ const Login = () => {
     console.log(invalids)
     if(invalids === 0) {
       if(isRegister) {
+        dispatch(showModal({ isShowModal: true, modalChildren: <Loading />}))
         const response = await apiRegister(payload)
+        dispatch(showModal({ isShowModal: null, modalChildren: null}))
         if(response.success) {
           setIsVerifiedEmail(true)
         }  else  Swal.fire('Opps', response.mes, 'error')
@@ -94,10 +96,9 @@ const Login = () => {
           />
 
           <Button 
-            name='Submit'
             style='px-4 py-2 rounded-md text-white bg-blue-500 text-semibold my-2 ml-5'
             handleOnclick={finalRegister}
-          />
+          >Submit</Button>
         </div>
       </div>}
       {isForgotPassword && <div className='animate-slide-right absolute top-0 left-0 bottom-0 right-0 bg-white py-8 flex flex-col items-center justify-center z-50'>
