@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 const sendMail = require('../utils/sendMail')
 const makeToken = require('uniqid')
-
+const {users} = require('../utils/constants')
 // const register = asyncHandler(async (req, res) => {
 //     const {email, password, firstname, lastname} = req.body
 //     if(!email || !password || !lastname || !firstname)
@@ -204,10 +204,62 @@ const resetPassword = asyncHandler(async (req, res,) => {
 })
 
 const getUsers = asyncHandler(async (req, res) => {
-    const response = await User.find().select('-refreshToken -password -role')
-    return res.status(200).json({
-        success: response ? true : false,
-        users: response
+    const queries = {...req.query}
+
+    // Tách các trường đặc biệt ra khỏi query 
+    const exculdeFields = ['limit', 'sort', 'page', 'fields']
+    exculdeFields.forEach(el => delete queries[el])
+
+    // Format lại các operators cho đúng cú pháp của mongoose
+    let queryString = JSON.stringify(queries)
+    queryString = queryString.replace(/\b(gte|gt|lt|lte)\b/g, matchedEl => `$${matchedEl}`)
+    const restQueries = JSON.parse(queryString)
+
+    let formatedQueries = {}
+    /**
+     * {quantity}
+     */
+    // Filtering 
+    if(queries?.firstname) restQueries.firstname = {$regex: queries.firstname, $options: 'i'}
+    if(queries?.lastname) restQueries.lastname = {$regex: queries.lastname, $options: 'i'}
+
+    if(queries?.category) restQueries.category = { $regex: queries.category, $options: 'i'}
+
+    let queryCommand = User.find(restQueries)
+
+
+    //Sorting 
+    //acb, efg => [acb, efg] => acb efg 
+    if(req.query.sort) {
+        const sortBy = req.query.sort.split(',').join(' ')
+        queryCommand = queryCommand.sort(sortBy)
+    }
+
+    //Fields limiting 
+    if(req.query.fields) {
+        const fields = req.query.fields.split(',').join(' ')
+        queryCommand = queryCommand.select(fields)
+    }
+
+
+    //Pagination 
+    // limit: số object lấy về 1 lần gọi api 
+    // skip: 2 
+    // 1 2 3 .... 10 
+    const page = +req.query.page || 1
+    const limit = +req.query.limit || process.env.LIMIT_PRODUCT
+    const skip = (page - 1) * limit
+    queryCommand.skip(skip).limit(limit)
+    // Execute query
+    // Số sản phẩm thỏa mãn điều kiện !== số lượng sản phẩm trả về 1 lần gọi api
+    queryCommand.exec(async(err, response) => {
+        if(err) throw new Error(err.message)
+        const counts = await User.find(restQueries).countDocuments()
+        return res.status(200).json({
+            success: response ? true : false,
+            counts,
+            users: response ? response : 'Cannot get user',
+        })
     })
 })
 
@@ -280,6 +332,14 @@ const updateCart = asyncHandler(async (req, res) => {
         })
     }
 })
+
+const createUsers = asyncHandler(async (req, res) => {
+    const response = await User.create(users)
+    return res.status(200).json({
+        success: response ? true : false,
+        users: response ? response : 'Something went wrong'
+    })
+})
 module.exports = {
     register,
     login,
@@ -294,5 +354,6 @@ module.exports = {
     updateUserByAdmin,
     updateUserAddress,
     updateCart,
-    finalRegister
+    finalRegister,
+    createUsers
 }
