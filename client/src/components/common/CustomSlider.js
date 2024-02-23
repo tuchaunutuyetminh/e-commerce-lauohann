@@ -1,5 +1,5 @@
 import React, { memo } from 'react'
-import Product from './Product';
+import Product from '../products/Product';
 import Slider from 'react-slick';
 
 var settings = {

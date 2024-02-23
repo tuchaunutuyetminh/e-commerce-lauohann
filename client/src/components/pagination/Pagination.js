@@ -1,6 +1,6 @@
 import React from 'react'
-import usePagination from '../hook/usePagination'
-import { PagiItem } from '.'
+import usePagination from '../../hook/usePagination'
+import { PagiItem } from '..'
 import { useSearchParams } from 'react-router-dom'
 
 const Pagination = ({totalCount}) => {

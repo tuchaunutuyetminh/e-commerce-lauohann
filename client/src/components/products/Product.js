@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import { formatMoney, renderStartFromNumber } from '../utils/helper'
-import label from '../assets/images/new.png'
-import trending from '../assets/images/trending.png'
-import SelectOption from './SelectOption'
-import icons from '../utils/icons'
+import { formatMoney, renderStartFromNumber } from '../../utils/helper'
+import label from '../../assets/images/new.png'
+import trending from '../../assets/images/trending.png'
+import SelectOption from '../search/SelectOption'
+import icons from '../../utils/icons'
 import {Link} from 'react-router-dom'
-import path from '../utils/path'
+import path from '../../utils/path'
  const { AiFillEye, IoMdMenu,BsFillHeartFill } = icons
 
 const Product = ({productData, isNew, normal}) => {

@@ -1,10 +1,10 @@
 import React, { memo, useEffect, useState } from 'react'
-import icons from '../utils/icons'
+import icons from '../../utils/icons'
 import moment from 'moment'
-import { apiGetProducts } from '../apis/product'
-import { formatMoney, renderStartFromNumber, secondsToHms } from '../utils/helper'
+import { apiGetProducts } from '../../apis/product'
+import { formatMoney, renderStartFromNumber, secondsToHms } from '../../utils/helper'
 import { IoMdMenu } from 'react-icons/io'
-import CountDown from './CountDown'
+import CountDown from '../common/CountDown'
 const { AiFillStar } = icons
 const DealDaily = () => {
     const [dealDaily, setDealDaily] = useState(null)

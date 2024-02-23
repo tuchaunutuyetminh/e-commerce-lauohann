@@ -1,5 +1,5 @@
 import React from 'react'
-import { formatMoney, renderStartFromNumber } from '../utils/helper'
+import { formatMoney, renderStartFromNumber } from '../../utils/helper'
 
 const ProductCard = ({price, totalRatings, image, title}) => {
   return (

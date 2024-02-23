@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react'
-import logo from '../assets/images/logo.png'
-import icons from '../utils/icons'
+import logo from '../../assets/images/logo.png'
+import icons from '../../utils/icons'
 import { Link } from 'react-router-dom'
-import path from '../utils/path'
+import path from '../../utils/path'
 import { useSelector } from 'react-redux'
 
 

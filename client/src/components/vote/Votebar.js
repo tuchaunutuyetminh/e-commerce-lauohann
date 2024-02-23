@@ -1,5 +1,5 @@
 import React, { memo, useRef, useEffect } from 'react'
-import icons from '../utils/icons'
+import icons from '../../utils/icons'
 
 const {AiFillStar} = icons
 const Votebar = ({number, ratingCount, ratingTotal}) => {

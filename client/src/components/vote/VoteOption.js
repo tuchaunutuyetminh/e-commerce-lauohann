@@ -1,8 +1,8 @@
 import React, { memo, useRef, useEffect, useState } from 'react'
-import logo from '../assets/images/logo.png'
-import {voteOptions} from '../utils/contants'
-import icons from '../utils/icons'
-import Button from './Button'
+import logo from '../../assets/images/logo.png'
+import {voteOptions} from 'utils/contants'
+import icons from 'utils/icons'
+import {Button} from 'components'
 
 const {AiFillStar} = icons
 const VoteOption = ({nameProduct, handleSubmitVoteOption}) => {
