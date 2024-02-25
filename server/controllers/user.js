@@ -213,19 +213,35 @@ const getUsers = asyncHandler(async (req, res) => {
     // Format lại các operators cho đúng cú pháp của mongoose
     let queryString = JSON.stringify(queries)
     queryString = queryString.replace(/\b(gte|gt|lt|lte)\b/g, matchedEl => `$${matchedEl}`)
-    const restQueries = JSON.parse(queryString)
+    const formatedQueries = JSON.parse(queryString)
 
-    let formatedQueries = {}
     /**
      * {quantity}
      */
     // Filtering 
-    if(queries?.firstname) restQueries.firstname = {$regex: queries.firstname, $options: 'i'}
-    if(queries?.lastname) restQueries.lastname = {$regex: queries.lastname, $options: 'i'}
+    if(queries?.name) restQueries.name = {$regex: queries.name, $options: 'i'}
 
-    if(queries?.category) restQueries.category = { $regex: queries.category, $options: 'i'}
-
-    let queryCommand = User.find(restQueries)
+    // const query = {}
+    
+    // if(req.query.q) {
+    //     query = {$or: [
+    //         {name :{$regex: req.query.q, $options: 'i'}},
+    //         {email :{$regex: req.query.q, $options: 'i'}}
+    //     ]}
+    // }
+    if(req.query.q) {
+        delete formatedQueries.q
+        formatedQueries['$or'] = [
+            {firstname :{$regex: req.query.q, $options: 'i'}},
+            {lastname :{$regex: req.query.q, $options: 'i'}},
+            {email :{$regex: req.query.q, $options: 'i'}}
+        ]
+        // query = {$or: [
+        //     {name :{$regex: req.query.q, $options: 'i'}},
+        //     {email :{$regex: req.query.q, $options: 'i'}}
+        // ]}
+    }
+    let queryCommand = User.find(formatedQueries)
 
 
     //Sorting 
@@ -254,7 +270,7 @@ const getUsers = asyncHandler(async (req, res) => {
     // Số sản phẩm thỏa mãn điều kiện !== số lượng sản phẩm trả về 1 lần gọi api
     queryCommand.exec(async(err, response) => {
         if(err) throw new Error(err.message)
-        const counts = await User.find(restQueries).countDocuments()
+        const counts = await User.find(formatedQueries).countDocuments()
         return res.status(200).json({
             success: response ? true : false,
             counts,
@@ -262,7 +278,6 @@ const getUsers = asyncHandler(async (req, res) => {
         })
     })
 })
-
 const deleteUser = asyncHandler(async (req, res) => {
     const { _id } = req.query
     if (!_id) throw new Error('Mising inputs')

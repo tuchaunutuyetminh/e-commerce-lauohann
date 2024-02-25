@@ -26,11 +26,12 @@ const Products = () => {
     if(response.success) setProducts(response)
   }
   useEffect(() => {
-    let param = []
-    for(let i of params.entries()) param.push(i)
+    const queries = Object.fromEntries([...params])
+    // let param = []
+    // for(let i of params.entries()) param.push(i)
 
-    const queries = {}
-    for(let i of params) queries[i[0]] = i[1]
+    // const queries = {}
+    // for(let i of params) queries[i[0]] = i[1]
 
     let priceQuery = {}
     if(queries.to && queries.from) {
