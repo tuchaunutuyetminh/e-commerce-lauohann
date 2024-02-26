@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { apiDeleteUser, apiGetUsers, apiUpdateUser } from 'apis/user'
-import { roles } from 'utils/contants'
+import { blockStatus, roles } from 'utils/contants'
 import { InputField, Pagination, InputForm, Select, Button} from 'components'
 import useDebounse from 'hook/useDebounse'
 import { useSearchParams } from 'react-router-dom'
@@ -8,14 +8,15 @@ import moment from 'moment'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
+import clsx from 'clsx'
 const ManageUser = () => {
-  const {handleSubmit, register, formState: { errors }} = useForm({
+  const {handleSubmit, register, formState: { errors }, reset} = useForm({
     email: '',
     firstname: '',
     lastname: '',
     role: '',
     phone: '',
-    status: ''
+    isBlocked: ''
   })
   const [users, setUsers] = useState(null)
   const [queries, setQueries] = useState({
@@ -68,12 +69,18 @@ const ManageUser = () => {
         }
        })
     }
+    useEffect(() => { 
+      if(editElm) reset({
+        role: editElm.role,
+        status: editElm.isBlocked
+      })
+     },[editElm])
   return (
-    <div className='w-full pl-8'>
+    <div className={clsx('w-full', editElm && 'pl-16')}>
       <h1 className='h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b uppercase'>
         <span>Manage users</span>
       </h1>
-      <div className='w-full p-4'>
+      <div className='w-full p-6'>
         <div className='flex justify-end py-4'>
           <InputField
             nameKey={'q'}
@@ -84,7 +91,7 @@ const ManageUser = () => {
             isHideLabel={true}
             />
         </div>
-        <form onSubmit={handleSubmit(handleUpdate)}>
+        <form onSubmit={handleSubmit(handleUpdate)} className={clsx('w-full',  editElm && 'pl-6')}>
           {editElm && <Button type='submit'>Update</Button>}
           <table className='table-auto mb-6 text-left w-full'>
             <thead className='font-bold text-[13px] border-gray-500 text-white'>
@@ -144,7 +151,15 @@ const ManageUser = () => {
                   </td>
                   <td className='py-2 px-4'>
                     {editElm?._id === el?._id
-                      ? <Select />
+                      ? <Select
+                      register={register}
+                      fullWidth
+                      errors={errors}
+                      defaultValue={+el.role}
+                      id={'role'}
+                      options={roles}
+                      validate={{required: 'Require fill.'}}
+                       />
                       : <span>{roles.find(role => role.code === +el.role)?.value}</span>}
                   </td>
                   <td className='py-2 px-4'>{editElm?._id === el?._id
@@ -162,7 +177,15 @@ const ManageUser = () => {
                     : <span>{el.mobile}</span>}
                   </td>
                   <td className='py-2 px-4'>{editElm?._id === el?._id 
-                    ? <Select />
+                    ? <Select
+                      register={register}
+                      fullWidth
+                      errors={errors}
+                      defaultValue={el.isBlocked}
+                      id={'isBlocked'}
+                      validate={{required: 'Require fill.'}}
+                      options={blockStatus}
+                     />
                     : <span>{el.isBlocked ? 'Blocked' : 'Active'}</span>}</td>
                   <td className='py-2 px-4'>{moment(el.createdAt).format('DD/MM/YYYY')}</td>
                   <td className='py-2 px-4'>
