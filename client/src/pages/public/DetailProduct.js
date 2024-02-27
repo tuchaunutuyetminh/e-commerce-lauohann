@@ -6,7 +6,7 @@ import Slider from 'react-slick';
 import ReactImageMagnify from 'react-image-magnify';
 import { formatMoney, fotmatPrice, renderStartFromNumber } from '../../utils/helper';
 import {productExtraIfomation} from '../../utils/contants'
-
+import DOMPurify from 'dompurify';
 var settings = {
   dots: false,
   infinite: false,
@@ -81,7 +81,7 @@ const handleChangeQuantity = useCallback((flag) => {
       </div>
       <div className='w-main m-auto mt-4 flex'>
         <div className='w-2/5 gap-4 flex flex-col'>
-          <div className='w-[458px] h-[458px] border overflow-hidden'>
+          <div className='w-[458px] h-[458px] border flex items-center overflow-hidden'>
             <ReactImageMagnify {...{
               smallImage: {
                   alt: 'Wristwatch by Ted Baker London',
@@ -92,7 +92,8 @@ const handleChangeQuantity = useCallback((flag) => {
                   src: currentImage,
                   width: 1800,
                   height: 1500
-              }
+              },
+              className: 'my-auto'
           }} />
           </div>
           <div className='w-[458px]'>
@@ -122,9 +123,12 @@ const handleChangeQuantity = useCallback((flag) => {
             <span  className='text-sm text-main italic'>{`(Sold: ${product?.sold}) pieces`}</span>
           </div>
           <ul className='text-sm text-gray-500 pl-6'>
-            {product?.description?.map(el => (
+            {product?.description?.length > 1 && product?.description?.map(el => (
               <li className='leading-6 list-square' key={el}>{el}</li>
             ))}
+
+            {/* để chắc chắn là nạp vào thẻ dic là html thôi k có đoạn script nào cả thì dùng thư viện domPurify */}
+            {product?.description?.length === 1 && <div className='text-sm line-clamp-[10] mb-8' dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(product?.description[0])}}></div>}
           </ul>
           <div className='flex flex-col gap-8'>
             <div className='flex items-center gap-4 font-semibold'>
