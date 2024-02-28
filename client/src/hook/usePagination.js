@@ -6,9 +6,9 @@ const usePagination = (totalProductCount, currentPage, siblingCount = 1) => {
   
     const paginationArray = useMemo(() => { 
         //số trang 
-        const pageSize = process.env.REACT_APP_LIMIT || 10
-        const paginationCount = Math.ceil(totalProductCount / pageSize)
-        const totalPaginationItem = siblingCount + 5
+        const pageSize = +process.env.REACT_APP_LIMIT || 10
+        const paginationCount = Math.ceil(+totalProductCount / pageSize)
+        const totalPaginationItem = +siblingCount + 5
 
         if(paginationCount <= totalPaginationItem) return generateRange(1, paginationCount)
 
