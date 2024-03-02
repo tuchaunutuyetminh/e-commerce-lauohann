@@ -1,17 +1,27 @@
-import React, { useEffect,useState } from 'react'
+import React, { useCallback, useEffect,useState } from 'react'
 import { InputForm, Pagination } from 'components'
-import { useForm } from 'react-hook-form'
-import { apiGetProducts } from 'apis/product'
+import { set, useForm } from 'react-hook-form'
+import { apiDeleteProduct, apiGetProducts } from 'apis/product'
+import { UpdateProduct } from 'pages/admin'
 import moment from 'moment'
 import { useSearchParams, createSearchParams, useNavigate, useLocation } from 'react-router-dom'
 import useDebounse from 'hook/useDebounse'
+import Swal from 'sweetalert2'
+import { toast } from 'react-toastify'
 
 const ManageProduct = () => {
-  const {register, formState: {errors}, handleSubmit, reset, watch} = useForm()
+  const {register, formState: {errors}, watch} = useForm()
   const navigate = useNavigate()
   const location = useLocation()
-  // hàm search product 
 
+  //biến edit product 
+  const [editProduct, setEditProduct] = useState(null)
+  //rerender
+  const [update, setUpdate] = useState(false)
+  // hàm search product 
+  const render = useCallback(() => { 
+    setUpdate(!update)
+   }, [update])
   
   //Lấy params trên search bar 
   const [params] = useSearchParams()
@@ -35,20 +45,44 @@ const ManageProduct = () => {
           q: queryDebounce
         }).toString()
       })
-    }
+    } else navigate({
+      pathname: location.pathname
+    })
   }, [queryDebounce])
   useEffect(() => { 
     const searchParams = Object.fromEntries([...params])
     
     fetchProducts(searchParams)
-   },[params])
+   },[params, update])
 
+   const handleDeleteProduct = (pid) => {
+    Swal.fire({
+      title: 'Delete product.',
+      text: 'Are you sure you want to delete this product?',
+      icon:'warning',
+      showCancelButton: true
+    }).then(async(rs) => { 
+      if(rs.isConfirmed) {
+        const response = await apiDeleteProduct(pid)
+        if(response.success) toast.success(response.mes)
+        else toast.error(response.mes)
+        render()
+      }
+     })
+   }
 
   //  useEffect(() => { 
   //   fetchProducts()
   //   },[])
   return (
     <div className='w-full flex flex-col gap-4 relative'>
+      { editProduct && <div className='absolute inset-0 z-50 bg-gray-100 min-h-screen'>
+        <UpdateProduct 
+          editProduct={editProduct} 
+          render={render}
+          setEditProduct={setEditProduct}
+        />
+      </div>}
       <div className='h-[69px] w-full]'></div>
       <h1 className='h-[75px] w-full flex justify-between items-center text-3xl font-bold px-4 border-b uppercase fixed top-0 bg-gray-100'>
         <span>Manage Products</span>
@@ -80,6 +114,8 @@ const ManageProduct = () => {
             <th className='text-center py-2'>Color</th>
             <th className='text-center py-2'>Ratings</th>
             <th className='text-center py-2'>UpdatedAt</th>
+            <th className='text-center py-2'>Actions</th>
+
           </tr>
         </thead>
         <tbody>
@@ -98,6 +134,19 @@ const ManageProduct = () => {
               <td className='text-center p-2'>{el.color}</td>
               <td className='text-center p-2'>{el.totalRatings}</td>
               <td className='text-center p-2'>{moment(el.createdAt).format('DD/MM/YYYY')}</td>
+              <td className='text-center p-2'>
+                <span 
+                  onClick={() => setEditProduct(el)}
+                  className='text-blue-500 hover:underline cursor-pointer px-1'
+                >
+                  Edit
+                </span>
+                <span 
+                  onClick={() => handleDeleteProduct(el._id)}
+                  className='text-blue-500 hover:underline cursor-pointer px-1'>
+                  Remove
+                </span>
+              </td>
             </tr>
           ))}
         </tbody>

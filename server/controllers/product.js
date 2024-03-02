@@ -116,11 +116,15 @@ const getProducts = asyncHandler(async (req, res) => {
 
 const updateProduct = asyncHandler(async (req, res) => {
     const { pid } = req.params
+    const files = req?.files
+    if(files?.thumb) req.body.thumb = req?.files?.thumb[0]?.path
+    if(files?.images) req.body.images = req.files?.images?.map(el => el.path)
+
     if(req.body && req.body.title) req.body.slug = slugify(req.body.title)
     const updatedProduct = await Product.findByIdAndUpdate(pid, req.body, {new: true})
     return res.status(200).json({
         success: updatedProduct ? true : false,
-        updatedProduct: updatedProduct ? updatedProduct : 'Cannot update product'
+        mes: updatedProduct ? 'Updated' : 'Cannot update product'
     })
 })
 
@@ -130,7 +134,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
     const deleteProduct = await Product.findByIdAndDelete(pid)
     return res.status(200).json({
         success: deleteProduct ? true : false,
-        deletedProduct: deleteProduct ? deleteProduct : 'Cannot delete product'
+        mes: deleteProduct ? 'Deleted' : 'Cannot delete product'
     })
 })
 
