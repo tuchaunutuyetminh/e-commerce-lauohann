@@ -7,6 +7,7 @@ import ReactImageMagnify from 'react-image-magnify';
 import { formatMoney, fotmatPrice, renderStartFromNumber } from '../../utils/helper';
 import {productExtraIfomation} from '../../utils/contants'
 import DOMPurify from 'dompurify';
+import clsx from 'clsx'
 var settings = {
   dots: false,
   infinite: false,
@@ -18,12 +19,32 @@ var settings = {
 
 const DetailProduct = () => {
   const [product, setProduct] = useState(null)
-  const {pid, title, category} = useParams()
+  const {pid, category} = useParams()
   const [quantity, setQuantity] = useState(1)
   const [currentImage, setCurrentImage] = useState(null)
   const [relatedProducts, setRelatedProducts] = useState(null)
   const [update, setUpdate] = useState(false)
+  const [varriant, setVarriant] = useState(null)
+  const [currentProduct, setcurrentProduct] = useState({
+    title: '',
+    thumb: '',
+    price: '',
+    images: [],
+    color: ''
+  })
 
+  useEffect(() => { 
+    if(varriant) {
+      setcurrentProduct({
+        title: product?.varriants?.find(el => el.sku === varriant)?.title,
+        color: product?.varriants?.find(el => el.sku === varriant)?.color,
+        price: product?.varriants?.find(el => el.sku === varriant)?.price,
+        images: product?.varriants?.find(el => el.sku === varriant)?.images,
+        thumb: product?.varriants?.find(el => el.sku === varriant)?.thumb,
+
+      })
+    }
+   },[varriant])
   const fetchProductData = async() => {
     const response = await apiGetProduct(pid)
     if(response.success) {
@@ -75,8 +96,8 @@ const handleChangeQuantity = useCallback((flag) => {
     <div className='w-full relative'>
       <div className='h-[81px] flex justify-center items-center bg-gray-100'>
         <div className='w-main'>
-          <h3 className='font-semibold'>{title}</h3>
-          <BreadCrumb title={title} category={category} pid={pid}/>
+          <h3 className='font-semibold'>{currentProduct?.title || product?.title}</h3>
+          <BreadCrumb title={currentProduct?.title || product?.title} category={category} pid={pid}/>
         </div>
       </div>
       <div className='w-main m-auto mt-4 flex'>
@@ -86,10 +107,10 @@ const handleChangeQuantity = useCallback((flag) => {
               smallImage: {
                   alt: 'Wristwatch by Ted Baker London',
                   isFluidWidth: true,
-                  src: currentImage
+                  src: currentProduct.thumb || currentImage
               },
               largeImage: {
-                  src: currentImage,
+                  src: currentProduct.thumb || currentImage,
                   width: 1800,
                   height: 1500
               },
@@ -98,7 +119,18 @@ const handleChangeQuantity = useCallback((flag) => {
           </div>
           <div className='w-[458px]'>
             <Slider className='image-slider' {...settings}>
-              {product?.images?.map(el => (
+              {currentProduct?.images.length === 0 && product?.images?.map(el => (
+                <div 
+                  key={el} className='flex w-full'>
+                  <img 
+                    onClick={e => handleClickImage(e, el)}
+
+                    src={el} alt='sub-product' 
+                    className='h-[143px] object-cover border cursor-pointer'/>
+                </div>
+              ))}
+
+              {currentProduct?.images.length > 0 && currentProduct?.images?.map(el => (
                 <div 
                   key={el} className='flex w-full'>
                   <img 
@@ -113,7 +145,7 @@ const handleChangeQuantity = useCallback((flag) => {
         </div>
         <div className='w-2/5 flex flex-col gap-4 mr-[20px]'>
           <div className='flex items-center justify-between'>
-            <h2 className='text-[30px] font-semibold'>{`${formatMoney(fotmatPrice(product?.price))} VND`}</h2>
+            <h2 className='text-[30px] font-semibold'>{`${formatMoney(fotmatPrice(currentProduct?.price)) || formatMoney(fotmatPrice(product?.price))} VND`}</h2>
             <span className='text-sm text-main'>{`In stock: ${product?.quantity}`}</span>
           </div>
           <div className='flex items-center'>
@@ -130,6 +162,33 @@ const handleChangeQuantity = useCallback((flag) => {
             {/* để chắc chắn là nạp vào thẻ dic là html thôi k có đoạn script nào cả thì dùng thư viện domPurify */}
             {product?.description?.length === 1 && <div className='text-sm line-clamp-[10] mb-8' dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(product?.description[0])}}></div>}
           </ul>
+          {/* varriant */}
+          <div className='my-4 flex gap-4'>
+            <span className='font-bold'>Color:</span>
+            <div className='flex flex-wrap gap-4 items-center w-full'>
+              <div 
+                onClick={() => setVarriant(null)}
+                className= {clsx('flex items-center gap-2 border p-2 cursor-pointer', !varriant && 'border-red-500 rounded-md')}>
+                  <img src={product?.thumb} alt='thumb' className='w-8 h-8 rounded-md object-cover'/>
+                  <span className='flex flex-col'>
+                    <span>{product?.color}</span>
+                    <span className='text-sm'>{formatMoney(product?.price)}</span>
+                  </span>
+              </div>
+              {product?.varriants?.map(el => (
+                <div 
+                  onClick={() => setVarriant(el.sku)}
+                  className= {clsx('flex items-center gap-2 border p-2 cursor-pointer', varriant === el.sku && 'border-red-500 rounded-md')}
+                  key={el?.sku}>
+                  <img src={el?.thumb} alt='thumb' className='w-8 h-8 rounded-md object-cover'/>
+                  <span className='flex flex-col'>
+                    <span>{el?.color}</span>
+                    <span className='text-sm'>{formatMoney(el?.price)}</span>
+                  </span>
+              </div>
+              ))}
+            </div>
+          </div>
           <div className='flex flex-col gap-8'>
             <div className='flex items-center gap-4 font-semibold'>
               <span>Quantity</span>

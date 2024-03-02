@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect,useState } from 'react'
-import { InputForm, Pagination } from 'components'
+import { CustomizeVarriants, InputForm, Pagination } from 'components'
 import { set, useForm } from 'react-hook-form'
 import { apiDeleteProduct, apiGetProducts } from 'apis/product'
 import { UpdateProduct } from 'pages/admin'
@@ -8,12 +8,18 @@ import { useSearchParams, createSearchParams, useNavigate, useLocation } from 'r
 import useDebounse from 'hook/useDebounse'
 import Swal from 'sweetalert2'
 import { toast } from 'react-toastify'
+import { FaRegEdit } from 'react-icons/fa'
+import { MdOutlineDeleteForever } from 'react-icons/md'
+import { RiDeleteBin6Line } from 'react-icons/ri'
+import { BiCustomize } from 'react-icons/bi'
 
 const ManageProduct = () => {
   const {register, formState: {errors}, watch} = useForm()
   const navigate = useNavigate()
   const location = useLocation()
 
+  //Biến customize để ràng buộc thêm varriants cho product 
+  const [customizeVarriants, setCustomizeVarriants] = useState(null)
   //biến edit product 
   const [editProduct, setEditProduct] = useState(null)
   //rerender
@@ -76,11 +82,20 @@ const ManageProduct = () => {
   //   },[])
   return (
     <div className='w-full flex flex-col gap-4 relative'>
+      {/* hiển thị component update sp */}
       { editProduct && <div className='absolute inset-0 z-50 bg-gray-100 min-h-screen'>
         <UpdateProduct 
           editProduct={editProduct} 
           render={render}
           setEditProduct={setEditProduct}
+        />
+      </div>}
+
+      { customizeVarriants && <div className='absolute inset-0 z-50 bg-gray-100 min-h-screen'>
+        <CustomizeVarriants
+          customizeVarriants={customizeVarriants} 
+          render={render}
+          setCustomizeVarriants={setCustomizeVarriants}
         />
       </div>}
       <div className='h-[69px] w-full]'></div>
@@ -113,6 +128,7 @@ const ManageProduct = () => {
             <th className='text-center py-2'>Sold</th>
             <th className='text-center py-2'>Color</th>
             <th className='text-center py-2'>Ratings</th>
+            <th className='text-center py-2'>Varriant</th>
             <th className='text-center py-2'>UpdatedAt</th>
             <th className='text-center py-2'>Actions</th>
 
@@ -133,18 +149,24 @@ const ManageProduct = () => {
               <td className='text-center p-2'>{el.sold}</td>
               <td className='text-center p-2'>{el.color}</td>
               <td className='text-center p-2'>{el.totalRatings}</td>
+              <td className='text-center p-2'>{el?.varriants?.length || 0}</td>
               <td className='text-center p-2'>{moment(el.createdAt).format('DD/MM/YYYY')}</td>
               <td className='text-center p-2'>
                 <span 
                   onClick={() => setEditProduct(el)}
-                  className='text-blue-500 hover:underline cursor-pointer px-1'
+                  className='text-blue-500 hover:text-orange-500 hover:underline inline-block cursor-pointer px-1'
                 >
-                  Edit
+                  <FaRegEdit />
                 </span>
                 <span 
                   onClick={() => handleDeleteProduct(el._id)}
-                  className='text-blue-500 hover:underline cursor-pointer px-1'>
-                  Remove
+                  className='text-blue-500 hover:text-orange-500 hover:underline inline-block cursor-pointer px-1'>
+                  <RiDeleteBin6Line />
+                </span>
+                <span 
+                  onClick={() => setCustomizeVarriants(el)}
+                  className='text-blue-500 hover:text-orange-500 hover:underline inline-block cursor-pointer px-1'>
+                  <BiCustomize />
                 </span>
               </td>
             </tr>
