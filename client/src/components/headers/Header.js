@@ -1,16 +1,31 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import logo from '../../assets/images/logo.png'
 import icons from '../../utils/icons'
 import { Link } from 'react-router-dom'
 import path from '../../utils/path'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { logout } from 'store/user/userSlice'
 
 
 
 const Header = () => {
   const { current} = useSelector(state => state.user)
-  console.log(current)
+  const [isShowOption, setIsShowOption] = useState(false)
+  const dispatch = useDispatch()
+  
   const {RiPhoneFill, MdEmail, FaUserCircle, BsHandbagFill} = icons
+
+  useEffect(() => { 
+    const handleClickoutOptions = (e) => { 
+      const profile = document.getElementById('profile')
+      if(!profile.contains(e.target)) setIsShowOption(false)
+    }
+
+    document.addEventListener('click', handleClickoutOptions)
+    return () => { 
+      document.removeEventListener('click', handleClickoutOptions)
+     }
+   },[])
   return (
     <div className='border flex justify-between w-main h-[110px] py-[35px]'>
       <Link to={`/${path.HOME}`}>
@@ -36,12 +51,27 @@ const Header = () => {
             <BsHandbagFill color='red'/>
             <span>0 item(s)</span>
           </div>
-          <Link 
-            to={+current?.role === 1945 ? `/${path.ADMIN}/${path.DASHBOARD}` : `/${path.MEMBER}/${path.PERSONAL}`}
-            className='cursor-pointer flex px-6 items-center justify-center gap-2'>
+          <div 
+            id='profile'
+            onClick={(e) => setIsShowOption(prev => !prev)}
+            className='cursor-pointer flex px-6 items-center justify-center gap-2 relative'>
             <FaUserCircle color='bg-main'/>
             <span>Profile</span>
-          </Link>
+            {/* show option */}
+            {isShowOption && <div
+                onClick={e => e.preventDefault()}
+               className='absolute top-full left-[16px] min-w-[150px] bg-gray-100 border py-2 flex flex-col'>
+              <Link className='p-2 hover:bg-sky-100 w-full' to={`/${path.MEMBER}/${path.PERSONAL}`}>
+                Personal
+              </Link>
+              {+current?.role === 1945 && <Link className='p-2 hover:bg-sky-100 w-full' to={`/${path.ADMIN}/${path.DASHBOARD}`}>
+                Admin workspace
+              </Link>}
+              <span 
+                onClick={() => dispatch(logout())}
+                className='p-2 hover:bg-sky-100 w-full'>Log out</span>
+            </div>}
+          </div>
         </Fragment>
         }
       </div>

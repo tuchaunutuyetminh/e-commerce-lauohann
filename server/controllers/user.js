@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 const sendMail = require('../utils/sendMail')
 const makeToken = require('uniqid')
-const {users} = require('../utils/constants')
+const { users } = require('../utils/constants')
 // const register = asyncHandler(async (req, res) => {
 //     const {email, password, firstname, lastname} = req.body
 //     if(!email || !password || !lastname || !firstname)
@@ -48,12 +48,12 @@ const register = asyncHandler(async (req, res) => {
             lastname,
             mobile
         })
-        if(newUser) {
+        if (newUser) {
             const html = `<h2>Register code: </h2><br /><blockquote>${token}</blockquote>`
             await sendMail({ email, html, subject: 'Confirm register account world' })
         }
-        setTimeout(async() => {
-            await User.deleteOne({email: emailedited})
+        setTimeout(async () => {
+            await User.deleteOne({ email: emailedited })
         }, [300000])
         return res.json({
             success: newUser ? true : false,
@@ -65,12 +65,12 @@ const register = asyncHandler(async (req, res) => {
 const finalRegister = asyncHandler(async (req, res) => {
     // const cookie = req.cookies
     const { token } = req.params
-    const notActivedEmail = await User.findOne({email: new RegExp(`${token}$`)})
-    if(notActivedEmail) {
+    const notActivedEmail = await User.findOne({ email: new RegExp(`${token}$`) })
+    if (notActivedEmail) {
         notActivedEmail.email = atob(notActivedEmail?.email?.split('@')[0])
         notActivedEmail.save()
     }
-    
+
     return res.json({
         success: notActivedEmail ? true : false,
         response: notActivedEmail ? 'Register is successfully. Please go log in.' : 'Something went wrong'
@@ -204,7 +204,7 @@ const resetPassword = asyncHandler(async (req, res,) => {
 })
 
 const getUsers = asyncHandler(async (req, res) => {
-    const queries = {...req.query}
+    const queries = { ...req.query }
 
     // Tách các trường đặc biệt ra khỏi query 
     const exculdeFields = ['limit', 'sort', 'page', 'fields']
@@ -219,22 +219,22 @@ const getUsers = asyncHandler(async (req, res) => {
      * {quantity}
      */
     // Filtering 
-    if(queries?.name) restQueries.name = {$regex: queries.name, $options: 'i'}
+    if (queries?.name) restQueries.name = { $regex: queries.name, $options: 'i' }
 
     // const query = {}
-    
+
     // if(req.query.q) {
     //     query = {$or: [
     //         {name :{$regex: req.query.q, $options: 'i'}},
     //         {email :{$regex: req.query.q, $options: 'i'}}
     //     ]}
     // }
-    if(req.query.q) {
+    if (req.query.q) {
         delete formatedQueries.q
         formatedQueries['$or'] = [
-            {firstname :{$regex: req.query.q, $options: 'i'}},
-            {lastname :{$regex: req.query.q, $options: 'i'}},
-            {email :{$regex: req.query.q, $options: 'i'}}
+            { firstname: { $regex: req.query.q, $options: 'i' } },
+            { lastname: { $regex: req.query.q, $options: 'i' } },
+            { email: { $regex: req.query.q, $options: 'i' } }
         ]
         // query = {$or: [
         //     {name :{$regex: req.query.q, $options: 'i'}},
@@ -246,13 +246,13 @@ const getUsers = asyncHandler(async (req, res) => {
 
     //Sorting 
     //acb, efg => [acb, efg] => acb efg 
-    if(req.query.sort) {
+    if (req.query.sort) {
         const sortBy = req.query.sort.split(',').join(' ')
         queryCommand = queryCommand.sort(sortBy)
     }
 
     //Fields limiting 
-    if(req.query.fields) {
+    if (req.query.fields) {
         const fields = req.query.fields.split(',').join(' ')
         queryCommand = queryCommand.select(fields)
     }
@@ -268,8 +268,8 @@ const getUsers = asyncHandler(async (req, res) => {
     queryCommand.skip(skip).limit(limit)
     // Execute query
     // Số sản phẩm thỏa mãn điều kiện !== số lượng sản phẩm trả về 1 lần gọi api
-    queryCommand.exec(async(err, response) => {
-        if(err) throw new Error(err.message)
+    queryCommand.exec(async (err, response) => {
+        if (err) throw new Error(err.message)
         const counts = await User.find(formatedQueries).countDocuments()
         return res.status(200).json({
             success: response ? true : false,
@@ -289,11 +289,15 @@ const deleteUser = asyncHandler(async (req, res) => {
 
 const updateUser = asyncHandler(async (req, res) => {
     const { _id } = req.user
+    const { firstname, lastname, email, mobile } = req.body
+    const data = {firstname, lastname, email, mobile}
+    if(req.file) data.avatar = req.file.path
+    
     if (!_id || Object.keys(req.body).length === 0) throw new Error('Mising inputs')
-    const response = await User.findByIdAndUpdate(_id, req.body, { new: true }).select('-password -role')
+    const response = await User.findByIdAndUpdate(_id, data , { new: true }).select('-password -role')
     return res.status(200).json({
         success: response ? true : false,
-        updatedUser: response ? response : 'Something went wrong'
+        mes: response ? 'Updated' : 'Something went wrong'
     })
 })
 
