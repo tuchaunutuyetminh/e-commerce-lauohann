@@ -49,7 +49,7 @@ const Header = () => {
         {current && <Fragment>
           <div className='cursor-pointer flex px-6 border-r items-center justify-center gap-2'>
             <BsHandbagFill color='red'/>
-            <span>0 item(s)</span>
+            <span>{`${current?.cart.length} item(s)` || 0}</span>
           </div>
           <div 
             id='profile'

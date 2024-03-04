@@ -21,9 +21,9 @@ const Products = () => {
   const [params] = useSearchParams()
 
 
-  const fetchProductsByCategory = async(queries) => {
-    const response = await apiGetProducts(queries)
-    if(response.success) setProducts(response)
+  const fetchProductsByCategory = async (queries) => {
+    const response = await apiGetProducts({ ...queries, category })
+    if (response.success) setProducts(response)
   }
   useEffect(() => {
     const queries = Object.fromEntries([...params])
@@ -34,27 +34,29 @@ const Products = () => {
     // for(let i of params) queries[i[0]] = i[1]
 
     let priceQuery = {}
-    if(queries.to && queries.from) {
-      priceQuery = { $and: [
-        {price: {gte: queries.from}},
-        {price: {lte: queries.to}}
-      ]}
-    delete queries.price
+    if (queries.to && queries.from) {
+      priceQuery = {
+        $and: [
+          { price: { gte: queries.from } },
+          { price: { lte: queries.to } }
+        ]
+      }
+      delete queries.price
 
     } else {
-      if(queries.from) queries.price = {gte: queries.from}
-      if(queries.to) queries.price = {lte: queries.to}
+      if (queries.from) queries.price = { gte: queries.from }
+      if (queries.to) queries.price = { lte: queries.to }
     }
     delete queries.to
     delete queries.from
-   
-    const q = {...priceQuery, ...queries}
+
+    const q = { ...priceQuery, ...queries }
 
     fetchProductsByCategory(q)
-    window.scrollTo(0,0)
+    window.scrollTo(0, 0)
   }, [params])
   const changeActiveFilter = useCallback((name) => {
-    if(activeClick === name) setActiveClick(null)
+    if (activeClick === name) setActiveClick(null)
     else setActiveClick(name)
   }, [activeClick])
 
@@ -63,19 +65,19 @@ const Products = () => {
   }, [sort])
 
   useEffect(() => {
-    if(sort) {
+    if (sort) {
       navigate({
         pathname: `/${category}`,
-        search: createSearchParams({sort}).toString()
+        search: createSearchParams({ sort }).toString()
       })
     }
-  },[sort])
+  }, [sort])
   return (
     <div className='w-full'>
       <div className='h-[81px] flex justify-center items-center bg-gray-100'>
         <div className='w-main'>
           <h3 className='font-semibold uppercase'>{category}</h3>
-          <BreadCrumb category={category}/>
+          <BreadCrumb category={category} />
         </div>
       </div>
       <div className='w-main border p-4 flex justify-between mt-8 m-auto'>
@@ -83,15 +85,15 @@ const Products = () => {
           <span className='font-semibold text-sm' >Filter by</span>
           <div className='flex items-center gap-4'>
             <SearchItem
-              name='price'    
-              activeClick={activeClick}   
-              changeActiveFilter={changeActiveFilter}   
+              name='price'
+              activeClick={activeClick}
+              changeActiveFilter={changeActiveFilter}
               type='input'
             />
             <SearchItem
-              name='color'  
-              activeClick={activeClick}   
-              changeActiveFilter={changeActiveFilter}       
+              name='color'
+              activeClick={activeClick}
+              changeActiveFilter={changeActiveFilter}
             />
           </div>
         </div>
@@ -103,19 +105,19 @@ const Products = () => {
         </div>
       </div>
       <div className='mt-8 w-main m-auto'>
-      <Masonry
-        breakpointCols={breakpointColumnsObj}
-        className="my-masonry-grid flex mx-[-10px]"
-        columnClassName="my-masonry-grid_column">
-        {products?.products?.map(el => (
-          <Product 
-          key={el._id}
-          pid={el.id}
-          productData={el}
-          normal={true}
-      />
-        ))}
-      </Masonry>
+        <Masonry
+          breakpointCols={breakpointColumnsObj}
+          className="my-masonry-grid flex mx-[-10px]"
+          columnClassName="my-masonry-grid_column">
+          {products?.products?.map(el => (
+            <Product
+              key={el._id}
+              pid={el.id}
+              productData={el}
+              normal={true}
+            />
+          ))}
+        </Masonry>
       </div>
 
       {/* Pagination */}

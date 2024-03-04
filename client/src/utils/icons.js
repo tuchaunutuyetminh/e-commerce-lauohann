@@ -1,7 +1,7 @@
 import { RiPhoneFill, RiTruckFill } from 'react-icons/ri'
 import {MdEmail, MdGroups} from 'react-icons/md'
-import {BsReplyFill,BsHandbagFill, BsFillHeartFill, BsShieldShaded} from 'react-icons/bs'
-import {FaUserCircle, FaTty} from 'react-icons/fa'
+import {BsReplyFill,BsHandbagFill,BsCartCheckFill, BsFillHeartFill, BsShieldShaded} from 'react-icons/bs'
+import {FaUserCircle, FaTty,FaCartPlus} from 'react-icons/fa'
 import {AiOutlineDashboard, AiOutlineDown, AiFillHome, AiFillStar,AiFillGift, AiOutlineStar, AiFillEye} from 'react-icons/ai'
 import {IoMdMenu, IoIosArrowForward, IoIosLogOut} from 'react-icons/io'
 import { TbBrandProducthunt } from 'react-icons/tb'
@@ -28,7 +28,9 @@ const icons = {
     AiOutlineDashboard,
     MdGroups,
     TbBrandProducthunt,
-    RiBillLine
+    RiBillLine,
+    FaCartPlus,
+    BsCartCheckFill
 }
 
 export default icons 
