@@ -3,7 +3,7 @@ import { apiGetProducts } from '../../apis/product'
 import CustomSlider from '../common/CustomSlider';
 import {getNewProducts} from '../../store/products/asyncAction'
 import { useDispatch, useSelector } from 'react-redux';
-
+import clsx from 'clsx'
 const tabs = [
     {id: 1, name: 'best sellers'},
     {id: 2, name: 'new arrivals'},
@@ -16,6 +16,8 @@ const BestSeller = () => {
   const [products, setProducts] = useState(null)
   
   const {newProduct} = useSelector(state => state.products)
+  const {isShowModal} = useSelector(state => state.app)
+
   const dispatch = useDispatch()
   const fetchProducts = async () => {
     const response = await apiGetProducts({ sort: '-sold'})
@@ -34,7 +36,7 @@ const BestSeller = () => {
     if(activedTab === 2) setProducts(newProduct)
   }, [activedTab])
   return (
-    <div>
+    <div className={clsx(isShowModal ? 'hidden' : '')}>
         <div className='flex text-[20px] ml-[-32px]'>
             {tabs.map(el => (
                 <span 

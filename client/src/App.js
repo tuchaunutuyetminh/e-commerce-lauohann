@@ -27,7 +27,7 @@ const  { isShowModal, modalChildren } = useSelector(state => state.app)
   dispatch(getCategories())
   }, [])
   return (
-    <div className="font-main relative">
+    <div className="font-main h-screen">
       {isShowModal && <Modal>{modalChildren}</Modal>}
       <Routes>
         {/*  */}
