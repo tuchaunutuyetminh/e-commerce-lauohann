@@ -92,14 +92,11 @@ const Product = ({ productData, isNew, normal, navigate, dispatch }) => {
               <SelectOption icon={<BsFillHeartFill />} />
             </span>
           </div>}
-          <img src={productData?.thumb || 'https://nayemdevs.com/wp-content/uploads/2020/03/default-product-image.png'}
-            alt='product image'
-            className='w-[274px] h-[274px] object-cover'
-          />
-          {!normal && <img
-            src={isNew ? label : trending}
-            className='absolute w-[100px] h-[35px] top-[0] right-[0] object-cover'
-          />}
+          <img
+            src={productData?.thumb || 'https://nayemdevs.com/wp-content/uploads/2020/03/default-product-image.png'} 
+            alt='product image' 
+            className='w-[274px] h-[274px] object-cover'/>
+          {!normal && <img src={isNew ? label : trending} alt='' className='absolute w-[100px] h-[35px] top-[0] right-[0] object-cover'/>}
         </div>
         <div className='flex flex-col mt-[15px] items-start w-full'>
           <span className='flex h-4'>{renderStartFromNumber(productData?.totalRatings)?.map((el, index) => (

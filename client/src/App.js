@@ -17,17 +17,22 @@ import { getCategories } from 'store/app/asyncActions'
 import { useDispatch, useSelector } from 'react-redux'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Modal } from 'components';
+import { Cart, Modal } from 'components';
 import Wishlist from 'pages/member/Wishlist';
+import { showCart } from 'store/app/appSlice';
 function App() {
-  const dispatch = useDispatch()
-const  { isShowModal, modalChildren } = useSelector(state => state.app)
-
+const  { isShowModal, modalChildren, isShowCart } = useSelector(state => state.app)
+const dispatch = useDispatch()
   useEffect(() => {
   dispatch(getCategories())
   }, [])
   return (
     <div className="font-main h-screen">
+      {isShowCart && <div 
+                  onClick={() => dispatch(showCart())}
+                  className='absolute inset-0 bg-overlay z-50 flex justify-end'>
+        <Cart />
+        </div>}
       {isShowModal && <Modal>{modalChildren}</Modal>}
       <Routes>
         {/*  */}

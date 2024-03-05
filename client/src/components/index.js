@@ -34,6 +34,7 @@ export { default as InputForm} from './inputs/InputForm'
 export { default as Select} from './inputs/Select' 
 export { default as MarkdownEditor} from './inputs/MarkdownEditor' 
 export { default as CustomizeVarriants} from './products/CustomizeVarriants' 
+export { default as Cart} from './products/Cart' 
 
 
 

@@ -3,15 +3,16 @@ import logo from '../../assets/images/logo.png'
 import icons from '../../utils/icons'
 import { Link } from 'react-router-dom'
 import path from '../../utils/path'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { logout } from 'store/user/userSlice'
+import withBaseComponent from 'components/hocs/withBaseComponent'
+import { showCart } from 'store/app/appSlice'
 
 
 
-const Header = () => {
+const Header = ({ dispatch }) => {
   const { current} = useSelector(state => state.user)
   const [isShowOption, setIsShowOption] = useState(false)
-  const dispatch = useDispatch()
   
   const {RiPhoneFill, MdEmail, FaUserCircle, BsHandbagFill} = icons
 
@@ -47,9 +48,11 @@ const Header = () => {
           <span>Online Support 24/7</span>
         </div>
         {current && <Fragment>
-          <div className='cursor-pointer flex px-6 border-r items-center justify-center gap-2'>
+          <div 
+              onClick={() => dispatch(showCart())}
+              className='cursor-pointer flex px-6 border-r items-center justify-center gap-2'>
             <BsHandbagFill color='red'/>
-            <span>{`${current?.cart.length} item(s)` || 0}</span>
+            <span >{`${current?.cart.length} item(s)` || 0}</span>
           </div>
           <div 
             id='profile'
@@ -79,4 +82,4 @@ const Header = () => {
   )
 }
 
-export default Header
+export default withBaseComponent(Header)

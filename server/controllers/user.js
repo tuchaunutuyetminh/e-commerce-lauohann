@@ -114,7 +114,13 @@ const login = asyncHandler(async (req, res) => {
 
 const getCurrent = asyncHandler(async (req, res) => {
     const { _id } = req.user
-    const user = await User.findById(_id).select('-refreshToken -password')
+    const user = await User.findById(_id).select('-refreshToken -password').populate({
+        path: 'cart',
+        populate: {
+            path: 'product',
+            select: 'title thumb price'
+        }
+    })
     return res.status(200).json({
         success: user ? true : false,
         rs: user ? user : 'User not found'
@@ -290,11 +296,11 @@ const deleteUser = asyncHandler(async (req, res) => {
 const updateUser = asyncHandler(async (req, res) => {
     const { _id } = req.user
     const { firstname, lastname, email, mobile } = req.body
-    const data = {firstname, lastname, email, mobile}
-    if(req.file) data.avatar = req.file.path
-    
+    const data = { firstname, lastname, email, mobile }
+    if (req.file) data.avatar = req.file.path
+
     if (!_id || Object.keys(req.body).length === 0) throw new Error('Mising inputs')
-    const response = await User.findByIdAndUpdate(_id, data , { new: true }).select('-password -role')
+    const response = await User.findByIdAndUpdate(_id, data, { new: true }).select('-password -role')
     return res.status(200).json({
         success: response ? true : false,
         mes: response ? 'Updated' : 'Something went wrong'
@@ -329,11 +335,11 @@ const updateCart = asyncHandler(async (req, res) => {
     const user = await User.findById(_id).select('cart')
     const alreadyProduct = user?.cart?.find(el => el.product.toString() === pid)
     if (alreadyProduct) {
-            const response = await User.updateOne({ cart: { $elemMatch: alreadyProduct } }, { $set: { "cart.$.quantity": quantity, "cart.$.color": color } }, { new: true })
-            return res.status(200).json({
-                success: response ? true : false,
-                mes: response ? 'Updated your cart' : 'Something went wrong'
-            })
+        const response = await User.updateOne({ cart: { $elemMatch: alreadyProduct } }, { $set: { "cart.$.quantity": quantity, "cart.$.color": color } }, { new: true })
+        return res.status(200).json({
+            success: response ? true : false,
+            mes: response ? 'Updated your cart' : 'Something went wrong'
+        })
     } else {
         const response = await User.findByIdAndUpdate(_id, { $push: { cart: { product: pid, quantity, color } } }, { new: true })
         return res.status(200).json({
@@ -345,7 +351,7 @@ const updateCart = asyncHandler(async (req, res) => {
 
 const removeProductInCart = asyncHandler(async (req, res) => {
     const { _id } = req.user
-    const { pid} = req.params
+    const { pid } = req.params
     const user = await User.findById(_id).select('cart')
     const alreadyProduct = user?.cart?.find(el => el.product.toString() === pid)
     if (!alreadyProduct) return res.status(200).json({
@@ -354,10 +360,10 @@ const removeProductInCart = asyncHandler(async (req, res) => {
     })
 
     const response = await User.findByIdAndUpdate(_id, { $pull: { cart: { product: pid } } }, { new: true })
-        return res.status(200).json({
-            success: response ? true : false,
-            mes: response ? 'Updated your cart' : 'Something went wrong'
-        })
+    return res.status(200).json({
+        success: response ? true : false,
+        mes: response ? 'Updated your cart' : 'Something went wrong'
+    })
 })
 const createUsers = asyncHandler(async (req, res) => {
     const response = await User.create(users)
