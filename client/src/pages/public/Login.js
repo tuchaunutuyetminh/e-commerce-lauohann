@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useState} from 'react'
 import { InputField, Button, Loading } from 'components'
 import { apiRegister, apiLogin, apiForgotPassword, apiFinalRegister } from 'apis/user'
 import Swal from 'sweetalert2'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import path from 'utils/path'
 import {login} from 'store/user/userSlice'
 import { useDispatch } from 'react-redux'
@@ -24,7 +24,9 @@ const Login = () => {
   const [invalidFields, setInvalidFields] = useState([])
   const [isRegister, setIsRegister] = useState(false)
   const [isForgotPassword, setIsForgotPassword] = useState(false)
-  
+  const [token, setToken] = useState('')
+  const [searchParams] = useSearchParams()
+
   const resetPayload = () => {
     setPayload({
       email: '',
@@ -46,12 +48,11 @@ const Login = () => {
   useEffect(() => {
     resetPayload()
   }, [isRegister])
-  //SUBMI
+  //SUBMIT
   const handleSubmit = useCallback(async() => {
     const {firstname, lastname,mobile, ...data} = payload
     const invalids = isRegister ? validate(payload, setInvalidFields) : validate(data, setInvalidFields)
 
-    console.log(invalids)
     if(invalids === 0) {
       if(isRegister) {
         dispatch(showModal({ isShowModal: true, modalChildren: <Loading />}))
@@ -64,14 +65,13 @@ const Login = () => {
         const rs = await apiLogin(data)
         if(rs.success) {
           dispatch(login({isLoggedIn: true, token: rs.accessToken, userData: rs.userData}))
-          navigate(`/${path.HOME}`)
+          searchParams.get('redirect') ? navigate(searchParams.get('redirect')) : navigate(`/${path.HOME}`)
         }  else  Swal.fire('Opps', rs.mes, 'error')
       }
     } 
   }, [payload, isRegister])
 
   
-  const [token, setToken] = useState('')
   const finalRegister = async() => {
     const response = await apiFinalRegister(token)
     if(response.success) {
@@ -130,7 +130,7 @@ const Login = () => {
         className='w-full h-full object-cover'
         />
         <div className='absolute top-0 bottom-0 left-0 right-1/2 flex items-center justify-center'>
-          <div className='flex flex-col items-center p-8 bg-white rounded-md min-w-[500px]'>
+          <div className='flex flex-col items-center justify-center p-8 bg-white rounded-md min-w-[500px]'>
             <h1 className='text-[28px] text-main font-semibold mb-8'>{isRegister ? 'Register' : 'Login'}</h1>
             {isRegister && <div className='flex items-center gap-2'>
               <InputField 
@@ -139,6 +139,7 @@ const Login = () => {
               invalidFields={invalidFields}
               setInvalidFields={setInvalidFields}
               nameKey='firstname'
+              fullWidth
             />
             <InputField 
               value={payload.lastname}
@@ -146,6 +147,7 @@ const Login = () => {
               invalidFields={invalidFields}
               setInvalidFields={setInvalidFields}
               nameKey='lastname'
+              fullWidth
             />
             </div>}
             <InputField 
@@ -154,6 +156,7 @@ const Login = () => {
               invalidFields={invalidFields}
               setInvalidFields={setInvalidFields}
               nameKey='email'
+              fullWidth
             />
             {isRegister && <InputField 
               value={payload.mobile}
@@ -161,6 +164,7 @@ const Login = () => {
               invalidFields={invalidFields}
               setInvalidFields={setInvalidFields}
               nameKey='mobile'
+              fullWidth
             />}
             <InputField 
               value={payload.password}
@@ -169,6 +173,7 @@ const Login = () => {
               setInvalidFields={setInvalidFields}
               nameKey='password'
               type='password'
+              fullWidth
             />
             <Button 
               handleOnclick={handleSubmit}

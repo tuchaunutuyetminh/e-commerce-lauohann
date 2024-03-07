@@ -8,7 +8,8 @@ import {
   DetailProduct, 
   Blogs, Products, 
   FAQ, FinalRegister,
-  ResetPassword} 
+  ResetPassword,
+  DetailCart} 
 from './pages/public'
 import { AdminLayout, CreateProduct, DashBoard, ManageOrder, ManageProduct, ManageUser } from 'pages/admin'
 import { History, MemberLayout, MyCart, Personal } from 'pages/member'
@@ -44,8 +45,9 @@ const dispatch = useDispatch()
             <Route path={path.OUR_SERVICES} element={<Services />}/>
             <Route path={path.PRODUCTS} element={<Products />}/>
             <Route path={path.RESET_PASSWORD} element={<ResetPassword />}/>
+            <Route path={path.DETAIL_CART} element={<DetailCart />}/>
             <Route path={path.ALL} element={<Home />}/>
-
+            
         </Route>
         <Route path={path.ADMIN} element={<AdminLayout />}>
           <Route path={path.DASHBOARD} element={<DashBoard />}/>

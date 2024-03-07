@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { apiGetProduct, apiGetProducts } from '../../apis'
+import { createSearchParams, useParams } from 'react-router-dom'
+import { apiGetProduct, apiGetProducts, apiUpdateCart } from '../../apis'
 import { BreadCrumb, Button, CustomSlider, ProductExtraInfoItem, ProductInfomation, SelectQuantity } from '../../components'
 import Slider from 'react-slick';
 import ReactImageMagnify from 'react-image-magnify';
@@ -8,6 +8,12 @@ import { formatMoney, fotmatPrice, renderStartFromNumber } from '../../utils/hel
 import { productExtraIfomation } from '../../utils/contants'
 import DOMPurify from 'dompurify';
 import clsx from 'clsx'
+import { useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
+import withBaseComponent from 'components/hocs/withBaseComponent';
+import path from 'utils/path';
+import { toast } from 'react-toastify';
+import { getCurrent } from 'store/user/asyncActions';
 var settings = {
   dots: false,
   infinite: false,
@@ -17,7 +23,7 @@ var settings = {
 };
 
 
-const DetailProduct = ({ isQuickView, data }) => {
+const DetailProduct = ({ location, isQuickView, data, navigate,dispatch }) => {
   const [product, setProduct] = useState(null)
   const params = useParams()
   const [quantity, setQuantity] = useState(1)
@@ -27,6 +33,7 @@ const DetailProduct = ({ isQuickView, data }) => {
   const [varriant, setVarriant] = useState(null)
   const [pid, setPid] = useState(null)
   const [category, setcategory] = useState(null)
+  const { current } = useSelector(state => state.user)
   const [currentProduct, setcurrentProduct] = useState({
     title: '',
     thumb: '',
@@ -35,16 +42,16 @@ const DetailProduct = ({ isQuickView, data }) => {
     color: ''
   })
 
-  useEffect(() => { 
-    if(data) {
+  useEffect(() => {
+    if (data) {
       setPid(data.pid)
       setcategory(data.category)
     }
-    else if(params) {
+    else if (params) {
       setPid(params.pid)
       setcategory(params.category)
     }
-   }, [data, params])
+  }, [data, params])
   useEffect(() => {
     if (varriant) {
       setcurrentProduct({
@@ -84,7 +91,6 @@ const DetailProduct = ({ isQuickView, data }) => {
     setUpdate(!update)
   }, [update])
   const handleQuantity = useCallback((number) => {
-    let previuous
     if (!Number(number) || Number(number) < 1) {
       return
     } else setQuantity(number)
@@ -104,7 +110,28 @@ const DetailProduct = ({ isQuickView, data }) => {
     setCurrentImage(el)
   }
 
+  const handleAddToCart = async() => {
+    if (!current) return Swal.fire({
+      title: 'Almost...',
+      text: 'Please login first!!',
+      icon: 'info',
+      cancelButtonText: 'Not now!',
+      showCancelButton: true,
+      confirmButtonText: 'Go login',
 
+    }).then((rs) => {
+      if (rs.isConfirmed) navigate({
+        pathname: `/${path.LOGIN}`,
+        search: createSearchParams({ redirect: location.pathname}).toString()
+      })
+    })
+    const response = await apiUpdateCart({ pid: pid, color: currentProduct?.color, quantity })
+    if (response.success) {
+      toast.success(response.mes)
+      dispatch(getCurrent())
+    }
+    else toast.error(response.mes)
+  }
   return (
     <div className={clsx('w-full')}>
       {!isQuickView && <div className='h-[81px] flex justify-center items-center bg-gray-100'>
@@ -207,12 +234,12 @@ const DetailProduct = ({ isQuickView, data }) => {
               <span>Quantity</span>
               <SelectQuantity handleQuantity={handleQuantity} quantity={quantity} handleChangeQuantity={handleChangeQuantity} />
             </div>
-            <Button fw>
+            <Button fw handleOnclick={handleAddToCart}>
               Add to cart
             </Button>
           </div>
         </div>
-        { !isQuickView && <div className='w-1/5'>
+        {!isQuickView && <div className='w-1/5'>
           {productExtraIfomation.map(el => (
             <ProductExtraInfoItem
               key={el.id}
@@ -242,4 +269,4 @@ const DetailProduct = ({ isQuickView, data }) => {
   )
 }
 
-export default DetailProduct
+export default withBaseComponent(DetailProduct)

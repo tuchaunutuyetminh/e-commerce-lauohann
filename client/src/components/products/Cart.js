@@ -9,8 +9,9 @@ import { toast } from 'react-toastify'
 import { showCart } from 'store/app/appSlice'
 import { getCurrent } from 'store/user/asyncActions'
 import { formatMoney, fotmatPrice } from 'utils/helper'
+import path from 'utils/path'
 
-const Cart = ({ dispatch }) => {
+const Cart = ({ dispatch, navigate }) => {
   const { current } = useSelector(state => state.user)
   const removeCart = async(pid) => { 
     const response = await apiRemoveCart(pid)
@@ -39,7 +40,7 @@ const Cart = ({ dispatch }) => {
               <div className='flex flex-col gap-1'>
                 <span className='font-bold'>{el.product.title}</span>
                 <span className='text-[10px]'>{el.color}</span>
-                <span className='text-sm text-main'>{formatMoney(fotmatPrice(el.product?.price))} VND</span>
+                c<span className='text-sm text-main'>{formatMoney(fotmatPrice(el.product?.price))} VND</span>
               </div>
             </div>
             <span 
@@ -56,7 +57,10 @@ const Cart = ({ dispatch }) => {
           <span className='text-main font-bold text-[18px]'>{formatMoney(fotmatPrice(current.cart?.reduce((sum, el) => sum + Number((el?.product?.price * el?.quantity)), 0)))} VND</span>
         </div>
         <span className='text-center italic text-xs text-white'>Shipping, taxes, and discounts calculated at checkout.</span>
-        <Button fw>Shopping cart</Button>
+        <Button handleOnclick={() => {
+          dispatch(showCart())
+          navigate(`/${path.DETAIL_CART}`)
+        }} fw>Shopping cart</Button>
       </div>
     </div>
   )
