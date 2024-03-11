@@ -49,7 +49,6 @@ const Product = ({ productData, isNew, normal, navigate, dispatch }) => {
     }
 
   }
-  console.log(productData)
   return (
     <div className='w-full text-base px-[10px]'>
       <div

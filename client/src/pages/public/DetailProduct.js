@@ -36,7 +36,7 @@ const DetailProduct = ({ location, isQuickView, data, navigate,dispatch }) => {
   const { current } = useSelector(state => state.user)
   const [currentProduct, setcurrentProduct] = useState({
     title: '',
-    thumb: '',
+    thumbnail: '',
     price: '',
     images: [],
     color: ''
@@ -60,6 +60,14 @@ const DetailProduct = ({ location, isQuickView, data, navigate,dispatch }) => {
         price: product?.varriants?.find(el => el.sku === varriant)?.price,
         images: product?.varriants?.find(el => el.sku === varriant)?.images,
         thumb: product?.varriants?.find(el => el.sku === varriant)?.thumb,
+      })
+    } else {
+      setcurrentProduct({
+        title: product?.title,
+        color: product?.color,
+        images: product?.images || [],
+        price: product?.price,
+        thumb: product?.thumb
       })
     }
   }, [varriant])
@@ -125,7 +133,15 @@ const DetailProduct = ({ location, isQuickView, data, navigate,dispatch }) => {
         search: createSearchParams({ redirect: location.pathname}).toString()
       })
     })
-    const response = await apiUpdateCart({ pid: pid, color: currentProduct?.color, quantity })
+    const response = await apiUpdateCart({ 
+      pid: pid, 
+      color: currentProduct?.color || product?.color, 
+      quantity, 
+      price: currentProduct?.price || product?.price,
+      thumbnail: currentProduct?.thumbnail || product?.thumb,
+      title: currentProduct?.title || product?.title,
+
+     })
     if (response.success) {
       toast.success(response.mes)
       dispatch(getCurrent())

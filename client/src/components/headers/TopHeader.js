@@ -6,6 +6,7 @@ import { getCurrent } from 'store/user/asyncActions'
 import icons from 'utils/icons'
 import { logout, clearMessage } from 'store/user/userSlice'
 import Swal from 'sweetalert2'
+import withBaseComponent from 'components/hocs/withBaseComponent'
 
 const {IoIosLogOut} = icons
 const TopHeader = () => {
@@ -48,4 +49,4 @@ const TopHeader = () => {
   )
 }
 
-export default memo(TopHeader)
+export default withBaseComponent(memo(TopHeader))
