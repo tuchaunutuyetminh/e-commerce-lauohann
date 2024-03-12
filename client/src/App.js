@@ -12,7 +12,7 @@ import {
   DetailCart} 
 from './pages/public'
 import { AdminLayout, CreateProduct, DashBoard, ManageOrder, ManageProduct, ManageUser } from 'pages/admin'
-import { History, MemberLayout, MyCart, Personal } from 'pages/member'
+import { Checkout, History, MemberLayout, MyCart, Personal } from 'pages/member'
 import path from 'utils/path'
 import { getCategories } from 'store/app/asyncActions'
 import { useDispatch, useSelector } from 'react-redux'
@@ -45,10 +45,11 @@ const dispatch = useDispatch()
             <Route path={path.OUR_SERVICES} element={<Services />}/>
             <Route path={path.PRODUCTS} element={<Products />}/>
             <Route path={path.RESET_PASSWORD} element={<ResetPassword />}/>
-            <Route path={path.DETAIL_CART} element={<DetailCart />}/>
+            {/* <Route path={path.DETAIL_CART} element={<DetailCart />}/> */}
             <Route path={path.ALL} element={<Home />}/>
             
         </Route>
+            <Route path={path.CHECKOUT} element={<Checkout />}/>
         <Route path={path.ADMIN} element={<AdminLayout />}>
           <Route path={path.DASHBOARD} element={<DashBoard />}/>
           <Route path={path.MANAGE_ORDER} element={<ManageOrder />}/>
@@ -59,7 +60,7 @@ const dispatch = useDispatch()
 
         <Route path={path.MEMBER} element={<MemberLayout />}>
           <Route path={path.PERSONAL} element={<Personal />}/>
-          <Route path={path.MY_CART} element={<MyCart />}/>
+          <Route path={path.MY_CART} element={<DetailCart />}/>
           <Route path={path.HISTORY} element={<History />}/>
           <Route path={path.WISHLIST} element={<Wishlist />}/>
 

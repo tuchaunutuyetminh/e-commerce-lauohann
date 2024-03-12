@@ -2,7 +2,9 @@ import { BreadCrumb, Button, OrderItem } from 'components'
 import withBaseComponent from 'components/hocs/withBaseComponent'
 import React, { memo } from 'react'
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import { formatMoney } from 'utils/helper'
+import path from 'utils/path'
 
 const DetailCart = ({ location, dispatch }) => {
     const { currentCart } = useSelector(state => state.user)
@@ -11,8 +13,8 @@ const DetailCart = ({ location, dispatch }) => {
         <div className='w-full'>
             <div className='h-[81px] flex justify-center items-center bg-gray-100'>
                 <div className='w-main'>
-                    <h3 className='font-semibold uppercase'>My cart</h3>
-                    <BreadCrumb category={location.pathname.slice('/','')?.split('-')?.join(' ')} />
+                    <h3 className='font-semibold uppercase text-2xl'>My cart</h3>
+                    {/* <BreadCrumb category={location.pathname.slice('/','')?.split('-')?.join(' ')} /> */}
                 </div>
             </div>
             <div className='flex flex-col border w-main mx-auto my-8'>
@@ -40,7 +42,7 @@ const DetailCart = ({ location, dispatch }) => {
                     <span className='text-main'>{`${formatMoney(currentCart?.reduce((sum, el) => +el.price*el.quantity + sum, 0))}`}</span>
                 </span>
                 <span className='text-xs italic'>Shipping, taxes, and discounts calculated at checkout.</span>
-                <Button>Checkout</Button>
+                <Link target='_blank' className='bg-main text-white px-4 py-2 rounded-md' to={`/${path.CHECKOUT}`}>Checkout</Link>
             </div>
         </div>
     )

@@ -60,7 +60,7 @@ const Cart = ({ dispatch, navigate }) => {
         <span className='text-center italic text-xs text-white'>Shipping, taxes, and discounts calculated at checkout.</span>
         <Button handleOnclick={() => {
           dispatch(showCart())
-          navigate(`/${path.DETAIL_CART}`)
+          navigate(`/${path.MEMBER}/${path.MY_CART}`)
         }} fw>Shopping cart</Button>
       </div>
     </div>

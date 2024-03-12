@@ -4,7 +4,7 @@ import label from '../../assets/images/new.png'
 import trending from '../../assets/images/trending.png'
 import SelectOption from '../search/SelectOption'
 import icons from '../../utils/icons'
-import { Link } from 'react-router-dom'
+import { Link, createSearchParams } from 'react-router-dom'
 import path from '../../utils/path'
 import withBaseComponent from 'components/hocs/withBaseComponent'
 import { showModal } from 'store/app/appSlice'
@@ -15,33 +15,43 @@ import { getCurrent } from 'store/user/asyncActions'
 import { useSelector } from 'react-redux'
 import Swal from 'sweetalert2'
 
-const { AiFillEye, BsFillHeartFill, FaCartPlus, BsCartCheckFill } = icons
+const { AiFillEye, BsFillHeartFill, FaCartPlus, BsCartCheckFill, location } = icons
 
 const Product = ({ productData, isNew, normal, navigate, dispatch }) => {
   const [isShowOption, setisShowOption] = useState(false)
-  const {current} = useSelector(state => state.user)
+  const {current } = useSelector(state => state.user)
   const handleClickOptions = async(e, flag) => {
     e.stopPropagation()
     if (flag === 'CART') {
-      if(!current) return Swal.fire({
-        title: 'Almost...',
-        text: 'Please login first!!',
-        icon: 'info',
-        cancelButtonText: 'Not now!',
-        showCancelButton: true,
-        confirmButtonText: 'Go login',
-        
-      }).then((rs) => { 
-        if(rs.isConfirmed) {
-          navigate(`/${path.LOGIN}`)
+        if (!current) return Swal.fire({
+          title: 'Almost...',
+          text: 'Please login first!!',
+          icon: 'info',
+          cancelButtonText: 'Not now!',
+          showCancelButton: true,
+          confirmButtonText: 'Go login',
+    
+        }).then((rs) => {
+          if (rs.isConfirmed) navigate({
+            pathname: `/${path.LOGIN}`,
+            search: createSearchParams({ redirect: location.pathname }).toString()
+          })
+        })
+        const response = await apiUpdateCart({
+          pid: productData?._id,
+          color: productData?.color,
+          quantity: 1,
+          price: productData?.price,
+          thumbnail: productData?.thumb,
+          title: productData?.title,
+    
+        })
+        if (response.success) {
+          toast.success(response.mes)
+          dispatch(getCurrent())
         }
-       })
-      const response = await apiUpdateCart({pid: productData?._id, color: productData?.color})
-      if(response.success) {
-        toast.success(response.mes)
-        dispatch(getCurrent())
-      }
-      else toast.error(response.mes)
+        else toast.error(response.mes)
+      
     }
     if (flag === 'WISHLIST') console.log('WISHLIST')
     if (flag === 'QUICK_VIEW') {
