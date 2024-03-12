@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { createSearchParams, useParams } from 'react-router-dom'
 import { apiGetProduct, apiGetProducts, apiUpdateCart } from '../../apis'
 import { BreadCrumb, Button, CustomSlider, ProductExtraInfoItem, ProductInfomation, SelectQuantity } from '../../components'
@@ -23,7 +23,9 @@ var settings = {
 };
 
 
-const DetailProduct = ({ location, isQuickView, data, navigate,dispatch }) => {
+const DetailProduct = ({ location, isQuickView, data, navigate, dispatch }) => {
+
+  const titleRef = useRef()
   const [product, setProduct] = useState(null)
   const params = useParams()
   const [quantity, setQuantity] = useState(1)
@@ -36,7 +38,7 @@ const DetailProduct = ({ location, isQuickView, data, navigate,dispatch }) => {
   const { current } = useSelector(state => state.user)
   const [currentProduct, setcurrentProduct] = useState({
     title: '',
-    thumbnail: '',
+    thumb: '',
     price: '',
     images: [],
     color: ''
@@ -70,7 +72,7 @@ const DetailProduct = ({ location, isQuickView, data, navigate,dispatch }) => {
         thumb: product?.thumb
       })
     }
-  }, [varriant])
+  }, [varriant, product])
   const fetchProductData = async () => {
     const response = await apiGetProduct(pid)
     if (response.success) {
@@ -89,6 +91,7 @@ const DetailProduct = ({ location, isQuickView, data, navigate,dispatch }) => {
       fetchProducts()
     }
     window.scrollTo(0, 0)
+    titleRef.current.scrollIntoView({ block: 'start' })
   }, [pid])
 
   useEffect(() => {
@@ -118,7 +121,7 @@ const DetailProduct = ({ location, isQuickView, data, navigate,dispatch }) => {
     setCurrentImage(el)
   }
 
-  const handleAddToCart = async() => {
+  const handleAddToCart = async () => {
     if (!current) return Swal.fire({
       title: 'Almost...',
       text: 'Please login first!!',
@@ -130,18 +133,18 @@ const DetailProduct = ({ location, isQuickView, data, navigate,dispatch }) => {
     }).then((rs) => {
       if (rs.isConfirmed) navigate({
         pathname: `/${path.LOGIN}`,
-        search: createSearchParams({ redirect: location.pathname}).toString()
+        search: createSearchParams({ redirect: location.pathname }).toString()
       })
     })
-    const response = await apiUpdateCart({ 
-      pid: pid, 
-      color: currentProduct?.color || product?.color, 
-      quantity, 
+    const response = await apiUpdateCart({
+      pid: pid,
+      color: currentProduct?.color || product?.color,
+      quantity,
       price: currentProduct?.price || product?.price,
-      thumbnail: currentProduct?.thumbnail || product?.thumb,
+      thumbnail: currentProduct?.thumb || product?.thumb,
       title: currentProduct?.title || product?.title,
 
-     })
+    })
     if (response.success) {
       toast.success(response.mes)
       dispatch(getCurrent())
@@ -151,7 +154,7 @@ const DetailProduct = ({ location, isQuickView, data, navigate,dispatch }) => {
   return (
     <div className={clsx('w-full')}>
       {!isQuickView && <div className='h-[81px] flex justify-center items-center bg-gray-100'>
-        <div className='w-main'>
+        <div ref={titleRef} className='w-main'>
           <h3 className='font-semibold'>{currentProduct?.title || product?.title}</h3>
           <BreadCrumb title={currentProduct?.title || product?.title} category={category} pid={pid} />
         </div>

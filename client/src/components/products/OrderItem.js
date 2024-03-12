@@ -4,7 +4,7 @@ import React, { memo, useCallback, useEffect, useState } from 'react'
 import { updateCart } from 'store/user/userSlice'
 import { formatMoney } from 'utils/helper'
 
-const OrderItem = ({ el, defaultQuantity = 1, dispatch }) => {
+const OrderItem = ({ color, defaultQuantity = 1, title, thumbnail, price, pid, dispatch }) => {
     const [quantity, setQuantity] = useState(() => defaultQuantity)
 
     const handleQuantity = (number) => {
@@ -18,16 +18,16 @@ const OrderItem = ({ el, defaultQuantity = 1, dispatch }) => {
     }, [quantity])
     //set quantity
     useEffect(() => { 
-        dispatch(updateCart({ pid: el.product?._id, quantity, color: el.color }))
+        dispatch(updateCart({ pid, quantity, color}))
      }, [quantity])
     return (
         <div className='w-main mx-auto border-b my-8 font-bold grid grid-cols-10'>
             <span className='col-span-6 w-full text-center'>
                 <div className='flex gap-2 px-4 py-2'>
-                    <img src={el.thumbnail} alt='thumb' className='w-28 h-28 object-cover' />
+                    <img src={thumbnail} alt='thumb' className='w-28 h-28 object-cover' />
                     <div className='flex flex-col items-startgap-1'>
-                        <span className='font-bold'>{el.title}</span>
-                        <span className='text-[10px] font-main'>{el.color}</span>
+                        <span className='font-bold'>{title}</span>
+                        <span className='text-[10px] font-main'>{color}</span>
                     </div>
                 </div>
             </span>
@@ -40,7 +40,7 @@ const OrderItem = ({ el, defaultQuantity = 1, dispatch }) => {
                 </div>
             </span>
             <span className='col-span-3 w-full text-center justify-center items-center flex h-full'>
-                <span className='text-lg text-main'>{formatMoney(el.price * quantity)} VND</span>
+                <span className='text-lg text-main'>{formatMoney(price * quantity)} VND</span>
             </span>
         </div>
     )

@@ -12,7 +12,7 @@ const DetailCart = ({ location, dispatch }) => {
             <div className='h-[81px] flex justify-center items-center bg-gray-100'>
                 <div className='w-main'>
                     <h3 className='font-semibold uppercase'>My cart</h3>
-                    <BreadCrumb category={location.pathmane} />
+                    <BreadCrumb category={location.pathname.slice('/','')?.split('-')?.join(' ')} />
                 </div>
             </div>
             <div className='flex flex-col border w-main mx-auto my-8'>
@@ -23,8 +23,15 @@ const DetailCart = ({ location, dispatch }) => {
                 </div>
                 {currentCart?.map(el => (
                     <OrderItem
-                        defaultQuantity={el.quantity}
-                        key={el._id} el={el} />
+                    defaultQuantity={el.quantity}
+                        key={el._id} 
+                        el={el.product}
+                        color={el.color}
+                        title={el.title}
+                        thumbnail={el.thumbnail}
+                        price={el.price}
+                        pid={el.product?._id}
+                        />
                 ))}
             </div>
             <div className='w-main mx-auto flex flex-col justify-center items-end gap-3'>
