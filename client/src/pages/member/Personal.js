@@ -8,7 +8,10 @@ import avatar from 'assets/images/avatarDefault.png'
 import { apiUpdateCurrent } from 'apis'
 import { getCurrent } from 'store/user/asyncActions'
 import { toast } from 'react-toastify'
-const Personal = () => {
+import withBaseComponent from 'components/hocs/withBaseComponent'
+import { useSearchParams } from 'react-router-dom'
+const Personal = ({navigate}) => {
+  const [searchParams] = useSearchParams()
   const { register, formState: { errors, isDirty }, handleSubmit, reset, watch } = useForm()
   const { current } = useSelector(state => state.user)
   const dispatch = useDispatch()
@@ -23,6 +26,8 @@ const Personal = () => {
     })
   }, [current])
 
+  
+
   const handleUpdateInfor = async(data) => {
     const formData = new FormData()
     if(data.avatar.length > 0) formData.append('avatar', data.avatar[0])
@@ -33,6 +38,7 @@ const Personal = () => {
     if(response.success) {
       dispatch(getCurrent())
       toast.success(response.mes)
+      if(searchParams?.get('redirect')) navigate(`${searchParams?.get('redirect')}`)
     } else toast.error(response.mes)
   }
   return (
@@ -136,4 +142,4 @@ const Personal = () => {
   )
 }
 
-export default Personal
+export default withBaseComponent(Personal)
