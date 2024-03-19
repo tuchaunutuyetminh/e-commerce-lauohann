@@ -5,6 +5,9 @@ import { clsx } from 'clsx'
 import { AiOutlineCaretDown, AiOutlineCaretUp } from 'react-icons/ai'
 import { useSelector } from 'react-redux'
 import avatar from 'assets/images/avatarDefault.png'
+import { RiArrowGoBackLine } from 'react-icons/ri'
+
+
 const activedStyle = 'px-4 py-2 flex items-center gap-2  bg-blue-500'
 const notActivedStyle = 'px-4 py-2 flex items-center gap-2  hover:bg-blue-100'
 const MemberSidebar = () => {
@@ -18,6 +21,7 @@ const MemberSidebar = () => {
     return (
         <div className='bg-white min-h-screen py-4 shadow-md w-[250px] flex-none'>
             <NavLink to={'/'} className={clsx('inline',notActivedStyle)}>
+            <RiArrowGoBackLine size={18}/>
                 Go home
             </NavLink>
             <div className='w-full flex flex-col items-center justify-center py-4'>

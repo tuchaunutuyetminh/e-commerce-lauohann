@@ -43,7 +43,7 @@ const dispatch = useDispatch()
             <Route path={path.DETAIL_PRODUCT__CATEGORY__PID__TITLE} element={<DetailProduct />}/>
             <Route path={path.FAQ} element={<FAQ />}/>
             <Route path={path.OUR_SERVICES} element={<Services />}/>
-            <Route path={path.PRODUCTS} element={<Products />}/>
+            <Route path={path.PRODUCTS__CATEGORY} element={<Products />}/>
             <Route path={path.RESET_PASSWORD} element={<ResetPassword />}/>
             {/* <Route path={path.DETAIL_CART} element={<DetailCart />}/> */}
             <Route path={path.ALL} element={<Home />}/>

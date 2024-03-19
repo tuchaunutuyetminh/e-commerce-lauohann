@@ -18,7 +18,8 @@ const Personal = () => {
       lastname: current?.lastname,
       email: current?.email,
       mobile: current?.mobile,
-      avatar: current?.avatar
+      avatar: current?.avatar,
+      address: current?.address
     })
   }, [current])
 
@@ -86,6 +87,16 @@ const Personal = () => {
               value: /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4}$/gm,
               message: 'Phone invalid'
             }
+          }}
+          fullWidth
+        />
+        <InputForm
+          label='Address'
+          register={register}
+          errors={errors}
+          id='address'
+          validate={{
+            required: 'Need fill this field'
           }}
           fullWidth
         />
