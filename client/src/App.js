@@ -46,10 +46,12 @@ const dispatch = useDispatch()
             <Route path={path.PRODUCTS__CATEGORY} element={<Products />}/>
             <Route path={path.RESET_PASSWORD} element={<ResetPassword />}/>
             {/* <Route path={path.DETAIL_CART} element={<DetailCart />}/> */}
-            <Route path={path.ALL} element={<Home />}/>
-            
+            <Route path={path.ALL} element={<Home />}/> 
         </Route>
-            <Route path={path.CHECKOUT} element={<Checkout />}/>
+        
+        <Route path={path.CHECKOUT} element={<Checkout />}/>
+
+
         <Route path={path.ADMIN} element={<AdminLayout />}>
           <Route path={path.DASHBOARD} element={<DashBoard />}/>
           <Route path={path.MANAGE_ORDER} element={<ManageOrder />}/>
