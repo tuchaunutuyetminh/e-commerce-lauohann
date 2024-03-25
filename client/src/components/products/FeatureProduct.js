@@ -23,6 +23,8 @@ const FeatureProduct = () => {
             title={el.title}
             totalRatings={el.totalRatings}
             price={el.price}
+            category={el.category}
+            pid={el._id}
           />
         ))}
       </div>

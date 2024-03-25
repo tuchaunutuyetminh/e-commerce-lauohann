@@ -9,15 +9,24 @@ import path from '../../utils/path'
 import withBaseComponent from 'components/hocs/withBaseComponent'
 import { showModal } from 'store/app/appSlice'
 import { DetailProduct } from 'pages/public'
-import { apiUpdateCart } from 'apis'
+import { apiUpdateCart, apiUpdateWishList } from 'apis'
 import { toast } from 'react-toastify'
 import { getCurrent } from 'store/user/asyncActions'
 import { useSelector } from 'react-redux'
 import Swal from 'sweetalert2'
+import clsx from 'clsx'
 
 const { AiFillEye, BsFillHeartFill, FaCartPlus, BsCartCheckFill, location } = icons
 
-const Product = ({ productData, isNew, normal, navigate, dispatch }) => {
+const Product = ({ 
+  productData, 
+  isNew, 
+  normal, 
+  navigate, 
+  dispatch, 
+  pid,
+  className
+}) => {
   const [isShowOption, setisShowOption] = useState(false)
   const {current } = useSelector(state => state.user)
   const handleClickOptions = async(e, flag) => {
@@ -53,16 +62,22 @@ const Product = ({ productData, isNew, normal, navigate, dispatch }) => {
         else toast.error(response.mes)
       
     }
-    if (flag === 'WISHLIST') console.log('WISHLIST')
+    if (flag === 'WISHLIST') {
+      const response = await apiUpdateWishList(pid)
+      if(response.success) {
+        dispatch(getCurrent())
+        toast.success(response.mes)
+      }else toast.error(response.mes)
+    }
     if (flag === 'QUICK_VIEW') {
       dispatch(showModal({ isShowModal: true, modalChildren: <DetailProduct isQuickView data={{ pid: productData._id, category: productData.category }} /> }))
     }
 
   }
   return (
-    <div className='w-full text-base px-[10px]'>
+    <div className={clsx('w-full text-base px-[10px]', className)}>
       <div
-        className='w-full p-[15px] border flex-col items-center block'
+        className='w-full p-[15px] flex-col items-center block'
         onMouseEnter={(e) => {
           e.stopPropagation()
           setisShowOption(true)
@@ -98,7 +113,7 @@ const Product = ({ productData, isNew, normal, navigate, dispatch }) => {
               title='Add to wishlist'
               onClick={(e) => handleClickOptions(e, 'WISHLIST')}
             >
-              <SelectOption icon={<BsFillHeartFill />} />
+              <SelectOption icon={<BsFillHeartFill color={current?.wishlist.some((i) => i._id === pid) ? 'red' : 'gray'}/>} />
             </span>
           </div>}
           <img

@@ -2,9 +2,11 @@ import React from 'react'
 import {Banner, Sidebar, BestSeller, DealDaily, FeatureProduct, Product, CustomSlider} from '../../components'
 import { useSelector } from 'react-redux'
 import icons from '../../utils/icons'
+import withBaseComponent from 'components/hocs/withBaseComponent'
+import { createSearchParams } from 'react-router-dom'
 
 const {IoIosArrowForward} = icons
-const Home = () => {
+const Home = ({navigate}) => {
   const {newProduct} = useSelector(state => state.products)
   const {categories} = useSelector(state => state.app)
   const {current, isLoggedIn} = useSelector(state => state.user)
@@ -47,7 +49,13 @@ const Home = () => {
                   <h4 className='font-semibold uppercase'>{el.title}</h4>
                   <ul className='text-sm'>
                     {el?.brand.map(item => (
-                      <span key={item} className='flex gap-2 items-center text-gray-500'>
+                      <span 
+                        onClick={() => navigate({
+                          pathname: `/${el.title}`,
+                          search: createSearchParams({ brand: item}).toString()
+                        })}
+                        key={item} 
+                        className='flex gap-2 items-center text-gray-500 cursor-pointer hover:underline'>
                         <IoIosArrowForward size={14}/>
                         <li>{item}</li>
                       </span>
@@ -66,4 +74,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default withBaseComponent(Home)

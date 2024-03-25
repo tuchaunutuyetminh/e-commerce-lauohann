@@ -15,7 +15,7 @@ const DealDaily = () => {
 
     let idInterval
     const fecthDealDaily = async () => {
-        const response = await apiGetProducts({limit: 1, page: Math.round(Math.random()*10), totalRatings: 5})
+        const response = await apiGetProducts({limit: 1, page: Math.round(Math.random()*10)})
         if(response.success) {
             setDealDaily(response.products[0])
 

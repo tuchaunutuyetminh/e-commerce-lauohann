@@ -1,14 +1,13 @@
-import { apiGetOrders, apiGetUserOrders } from 'apis'
+import { apiGetUserOrders } from 'apis'
 import { CustomSelect, InputForm, Pagination } from 'components'
 import withBaseComponent from 'components/hocs/withBaseComponent'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { BiCustomize } from 'react-icons/bi'
 import { FaRegEdit } from 'react-icons/fa'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { createSearchParams, useSearchParams } from 'react-router-dom'
-import { statusOrders, statusorders } from 'utils/contants'
+import { statusOrders } from 'utils/contants'
 
 const History = ({navigate, location}) => {
   const { register, formState: { errors }, watch, setValue } = useForm()
@@ -78,34 +77,31 @@ const History = ({navigate, location}) => {
             <th className='text-center py-2'>Total</th>
             <th className='text-center py-2'>Status</th>
             <th className='text-center py-2'>Created At</th>
-            <th className='text-center py-2'>Actions</th>
           </tr>
         </thead>
         <tbody>
           {orders?.map((el, idx) => (
             <tr key={el._id} className='border-b'>
               <td className='text-center p-2'>{((+params.get('page') > 1 ? +params.get('page') - 1 : 0) * process.env.REACT_APP_LIMIT) + (idx + 1)}</td>
-              <td className='text-center p-2'>
-                <span className='flex flex-col'>
+              <td className='text-center p-2 max-w-[500px]'>
+                <span className='grid grid-cols-4 gap-4'>
                   {el.products?.map(item => (
-                    <span key={item._id}>{`• ${item.title} - ${item.color}`}</span>
+                    <span key={item._id} className='col-span-1 flex items-center gap-2'>
+                      <img src={item?.thumbnail} alt='thumb' className='w-8 h-8 rounded-md object-cover'/>
+                      <span className='flex flex-col'>
+                        <span className='text-main text-sm'>{item?.title}</span>
+                        <span className='flex items-center text-xs gap-2'>
+                          <span>Quantity:</span>
+                          <span className='text-main'>{item?.quantity}</span>
+                        </span>
+                      </span>
+                    </span>
                   ))}
                 </span>
               </td>
               <td className='text-center p-2'>{el.total}</td>
               <td className='text-center p-2'>{el.status}</td>
               <td className='text-center p-2'>{moment(el.createdAt)?.format('DD/MM/YYYY')}</td>
-              <td className='text-center p-2'>
-                <span
-                  className='text-blue-500 hover:text-orange-500 hover:underline inline-block cursor-pointer px-1'
-                >
-                  <FaRegEdit />
-                </span>
-                <span
-                  className='text-blue-500 hover:text-orange-500 hover:underline inline-block cursor-pointer px-1'>
-                  <RiDeleteBin6Line />
-                </span>
-              </td>
             </tr>
           ))}
         </tbody>
