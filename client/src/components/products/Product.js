@@ -77,7 +77,7 @@ const Product = ({
   return (
     <div className={clsx('w-full text-base px-[10px]', className)}>
       <div
-        className='w-full p-[15px] flex-col items-center block'
+        className='w-full p-[15px] border flex-col items-center block'
         onMouseEnter={(e) => {
           e.stopPropagation()
           setisShowOption(true)

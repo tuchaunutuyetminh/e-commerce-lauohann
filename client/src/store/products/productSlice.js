@@ -1,17 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {getNewProducts} from './asyncAction'
+import { getNewProducts } from './asyncAction'
 
 export const productSlice = createSlice({
-    name: 'product',
-    initialState: {
-        newProduct: null,
-        errorMessage: '',
-    },
-    reducers: {
-        // logout: (state) => {
-        //   state.isLoading = false
-        // }
-    },
+  name: 'product',
+  initialState: {
+    newProduct: null,
+    errorMessage: '',
+    dealDaily: null
+  },
+  reducers: {
+    getDealDaily: (state, action) => {
+      state.dealDaily = action.payload
+    }
+  },
   extraReducers: (builder) => {
     builder.addCase(getNewProducts.pending, (state) => {
       state.isLoading = true;
@@ -29,6 +30,6 @@ export const productSlice = createSlice({
   },
 })
 
-// export const { } = appSlice.actions
+export const { getDealDaily } = productSlice.actions
 
 export default productSlice.reducer
